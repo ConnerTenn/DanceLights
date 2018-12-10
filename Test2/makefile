@@ -1,20 +1,20 @@
 
-GPP=g++ -Wall -std=c++17
-LAUDIO=libportaudio.a -lasound -ljack -pthread 
+GPP=g++ -Wall -std=c++17 -I portaudio/include
+LAUDIO=../libportaudio.a -lasound -ljack -pthread
 
-all: program program2
+all: program
 
 program: main.o DanceLight.o Spectrum.o Screen.o Globals.o
 	$(GPP) main.o DanceLight.o Spectrum.o Screen.o Globals.o -o program
-
-program2: main2.o DanceLight.o Spectrum.o Screen.o Globals.o
-	$(GPP) main2.o DanceLight.o Spectrum.o Screen.o Globals.o $(LAUDIO) -o program2
 	
 main.o: main.cpp DanceLight.h Spectrum.h Screen.h Globals.h
 	$(GPP) main.cpp -c -o main.o
 
 main2.o: main2.cpp DanceLight.h Spectrum.h Screen.h Globals.h
 	$(GPP) main2.cpp -c -o main2.o
+	
+main3.o: main3.cpp DanceLight.h Spectrum.h Screen.h Globals.h
+	$(GPP) main3.cpp -c -o main3.o
 	
 DanceLight.o: DanceLight.cpp DanceLight.h Spectrum.h Screen.h Globals.h
 	$(GPP) DanceLight.cpp -c -o DanceLight.o
@@ -31,3 +31,6 @@ Globals.o: Globals.cpp Globals.h
 	
 audio: Audio.c
 	$(GPP) Audio.c $(LAUDIO) -o audio
+
+clean: 
+	rm *.o program* -f

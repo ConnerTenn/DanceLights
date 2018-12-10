@@ -1,6 +1,6 @@
 
 GPP=g++ -Wall -std=c++17 -I portaudio/include
-LAUDIO=libportaudio.a -lasound -ljack -pthread
+LAUDIO=../libportaudio.a -lasound -ljack -pthread
 
 all: program1 program2 program3
 
