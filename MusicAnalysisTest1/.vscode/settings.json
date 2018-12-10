@@ -1,0 +1,15 @@
+{
+	"files.associations": {
+		"ostream": "cpp",
+		"initializer_list": "cpp",
+		"type_traits": "cpp",
+		"vector": "cpp",
+		"xstring": "cpp",
+		"xutility": "cpp",
+		"chrono": "cpp",
+		"complex": "cpp",
+		"valarray": "cpp",
+		"portaudio.h": "c",
+		"thread": "cpp"
+	}
+}
