@@ -21,7 +21,6 @@ typedef unsigned int u32;
 typedef unsigned long long u64;
 
 typedef std::complex<double> Complex;
-typedef std::valarray<Complex> CArray;
 
 
 u64 GetMilliseconds();
@@ -46,8 +45,12 @@ struct Array
 	//Array(const Array<T, N> &other);
 	int Size();
 	T &operator[](int i);
-	//void operator=(Array);
+	void Copy(const Array<T, N> &other);
 };
+
+
+
+
 
 /*template<class T, int N>
 Array<T,N>::Array(const Array<T, N> &other)
@@ -60,6 +63,12 @@ int Array<T,N>::Size() { return N; }
 
 template<class T, int N>
 T &Array<T,N>::operator[](int i) { return Values[i]; }
+
+template<class T, int N>
+void Array<T,N>::Copy(const Array<T, N> &other)
+{
+	for (int i = 0; i < N; i++) { Values[i] = other[i]; }
+}
 
 #endif
 
