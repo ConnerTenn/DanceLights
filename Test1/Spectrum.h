@@ -41,6 +41,7 @@ void ifft2(RoundBuffer<Complex> &x);
 void fft3(Array<Complex, 16> &x);
 void fft3(Array<Complex, 32> &x);
 void fft3(Array<Complex, 64> &x);
+void fft3(Array<Complex, 128> &x);
 RoundBuffer<Complex> beat(RoundBuffer<RoundBuffer<Complex>> &x);
 
 

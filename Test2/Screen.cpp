@@ -116,7 +116,7 @@ Array<int,2> Screen::GetDimensions()
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 
 
-	return {w.ws_col, w.ws_row};
+	return {(int)w.ws_col, (int)w.ws_row};
 }
 
 void Screen::Draw(int x, int y, RGB foreground, RGB background, char character)

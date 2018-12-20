@@ -6,6 +6,7 @@
 #include <string.h>
 #include <math.h>
 #include <complex>
+#include <initializer_list>
 
 #include <unistd.h>
 #include <vector>
@@ -38,11 +39,15 @@ struct RGB
 	u8 operator[](int i);
 };
 
+
 template<class T, int N>
 struct Array
 {
 	T Values[N];
-	//Array(const Array<T, N> &other);
+	
+	Array();
+	Array(std::initializer_list<T> list);
+	Array(const Array<T, N> &other);
 	int Size();
 	T &operator[](int i);
 	void Copy(const Array<T, N> &other);
@@ -50,13 +55,17 @@ struct Array
 
 
 
+template<class T, int N>
+Array<T,N>::Array(std::initializer_list<T> list)
+{
+	for (int i = 0; i < (int)list.size(); i++) { Values[i] = list.begin()[i]; }
+}
 
-
-/*template<class T, int N>
+template<class T, int N>
 Array<T,N>::Array(const Array<T, N> &other)
 {
 	for (int i = 0; i < N; i++) { Values[i] = other[i]; }
-}*/
+}
 
 template<class T, int N>
 int Array<T,N>::Size() { return N; }

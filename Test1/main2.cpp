@@ -25,7 +25,7 @@ PaError PrintPaError(PaError error)
 #define LEN 512
 #define FREQ(f,t) 2*PI*((double)(t)*(f)/LEN)
 #define GRAPH_HEIGHT 10
-#define SPECTRUM_HIST 64
+#define SPECTRUM_HIST 32
 
 void DrawGraph2(Screen &screen, int x, int y, RoundBuffer<Complex> &data, int len, RGB colour, double scale)
 {
@@ -137,9 +137,9 @@ void DoDraw2(RoundBuffer<Complex> buff)
 {
 	TextScreen.Clear();
 	TextScreen.ClearBuffer();
-	DrawGraph2(TextScreen, 0,0, buff, MIN(buff.Size(), TextScreen.GetWidth()), {255,0,0}, 30.0);
+	DrawGraph2(TextScreen, 0,0, buff, MIN(buff.Size(), TextScreen.GetWidth()), {255,0,0}, 4.0);
 	fft2(buff);
-	DrawDBGraph2(TextScreen, 0, GRAPH_HEIGHT+1, buff, buff.Size()/2, {0,255,0}, 50.0);
+	DrawDBGraph2(TextScreen, 0, GRAPH_HEIGHT+1, buff, buff.Size()/2, {0,255,0}, 10.0);
 	
 	//ifft2(buff);
 	//DrawGraph2(TextScreen, 0,40, buff, {0,100,255}, 15.0);
@@ -151,7 +151,7 @@ void DoDraw2(RoundBuffer<Complex> buff)
 	
 	//SpectrumBuff.Append(Array<Complex, LEN/2>());
 	//for (int i = 0; i < LEN/2; i++) { SpectrumBuff[0][i] = buff[i]; }
-	DrawSpectrumGraph(TextScreen, 0, 2*(GRAPH_HEIGHT+1), SpectrumBuff, SpectrumBuff.Size(), {0,0,255}, 5.0);
+	DrawSpectrumGraph(TextScreen, 0, 2*(GRAPH_HEIGHT+1), SpectrumBuff, SpectrumBuff.Size(), {0,0,255}, 1.0);
 	
 	//for (int i = 0; i < 256; i++) { TextScreen.DrawToBuffer(i, 2*(GRAPH_HEIGHT+2)-1, {0,0,0}, RGBFade(i/255.0), ' '); }
 	
@@ -166,7 +166,7 @@ static int Callback( const void *inputBuffer, void *outputBuffer, unsigned long 
 	
 	for(unsigned int i=0; i<framesPerBuffer; i++ )
 	{
-		AudioBuff2.Append(in[i]*4.0);
+		AudioBuff2.Append(in[i]*2.0);
 	}
 	
 	RoundBuffer<Complex> buff(AudioBuff2);

@@ -6,5 +6,5 @@ class DanceController
 {
 	std::vector<DanceLight> DanceLightList;
 	
-	
+	void Step();
 };

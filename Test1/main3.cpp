@@ -158,17 +158,17 @@ void DoDraw(RoundBuffer<Complex> inputBuffer, RoundBuffer<Complex> fftBuffer, Ro
 {
 	TextScreen.Clear();
 	TextScreen.ClearBuffer();
-	DrawGraph(TextScreen, 0,0, inputBuffer, MIN(inputBuffer.Size(), TextScreen.GetWidth()), {255,0,0}, 20.0);
+	DrawGraph(TextScreen, 0,0, inputBuffer, MIN(inputBuffer.Size(), TextScreen.GetWidth()), {255,0,0}, 2.0);
 	
-	DrawDBGraph(TextScreen, 0, GRAPH_HEIGHT+1, fftBuffer, fftBuffer.Size()/2, {0,255,0}, 30.0);
+	DrawDBGraph(TextScreen, 0, GRAPH_HEIGHT+1, fftBuffer, fftBuffer.Size()/2, {0,255,0}, 10.0);
 	
-	DrawSpectrumGraph(TextScreen, 0, 2*(GRAPH_HEIGHT+1), spectrumBuff, spectrumBuff.Size(), {0,0,255}, 3.0);
+	DrawSpectrumGraph(TextScreen, 0, 2*(GRAPH_HEIGHT+1), spectrumBuff, spectrumBuff.Size(), {0,0,255}, 1.0);
 	
 	//DrawBeatGraph(TextScreen, 0, 2*(GRAPH_HEIGHT+1)+SPECTRUM_HIST_LEN/2+1, beatBuffer, SPECTRUM_HIST_LEN/2, {255,255,0}, 3.0);
 	
-	DrawSpectrumReduced(TextScreen, 0, 2*(GRAPH_HEIGHT+1)+SPECTRUM_HIST_LEN/2+1, ReducedSpectrum, ReducedSpectrum.Size(), {0,255,255}, 3.0);
+	DrawSpectrumReduced(TextScreen, 0, 2*(GRAPH_HEIGHT+1)+SPECTRUM_HIST_LEN/2+1, ReducedSpectrum, ReducedSpectrum.Size(), {0,255,255}, 2.0);
 	
-	DrawBeatGraph2(TextScreen, SPECTRUM_HIST_LEN+1, 2*(GRAPH_HEIGHT+1)+SPECTRUM_HIST_LEN/2+1, ReducedBeat, SPECTRUM_HIST_LEN/2, {255,255,0}, 5.0);
+	DrawBeatGraph2(TextScreen, SPECTRUM_HIST_LEN+1, 2*(GRAPH_HEIGHT+1)+SPECTRUM_HIST_LEN/2+1, ReducedBeat, SPECTRUM_HIST_LEN/2, {255,255,0}, 3.0);
 	
 	
 	TextScreen.DisplayBuffer();
@@ -196,7 +196,7 @@ static int Callback( const void *inputBuffer, void *outputBuffer, unsigned long 
 	
 	for(unsigned int i=0; i<framesPerBuffer; i++ )
 	{
-		InputBuffer.Append(in[i]*4.0);
+		InputBuffer.Append(in[i]*2.0);
 	}
 	
 	FftBuffer = InputBuffer;

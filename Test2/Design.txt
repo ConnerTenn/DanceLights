@@ -1,0 +1,32 @@
+
+Data Pipeline
+
+======
+Input
+
+Receives the raw audio.
+Does FFT analysis.
+Clean and filter
+	Remove 
+
+======
+||
+-----
+Base Beat Cycles
+	y=h*e^(-(a*sin(f*PI*x)^2))
+	h=height
+	a=attack
+	f=frequency
+	x={ -(1/(f*PI))*arcsin((1/a)*sqrt(-ln(0.5))), (1/(f*PI))*arcsin((1/a)*sqrt(-ln(0.5)))}
+Melody Array
+	bool[88] (for number of piano keys)
+	global attack value
+	global harmonics value
+-----
+||
+\/
+======
+
+
+
+======

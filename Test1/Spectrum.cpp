@@ -162,6 +162,10 @@ void fft3(Array<Complex, 64> &x)
 {
 	fft(x);
 }
+void fft3(Array<Complex, 128> &x)
+{
+	fft(x);
+}
 
 RoundBuffer<Complex> beat(RoundBuffer<RoundBuffer<Complex>> &x)
 {
