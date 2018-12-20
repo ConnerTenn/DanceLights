@@ -7,7 +7,12 @@ Input
 Receives the raw audio.
 Does FFT analysis.
 Clean and filter
-	Remove 
+	Remove harmonics
+
+Processes cycle verification
+	Tracks frequency of beat and verifies that the internal cycles matches the beat
+	Tracks input and internal cycle to 50% and if they match, cycle is verified and it follows the cycle
+	-> Adjusts on 50% beat, 100% beat, beat sustain length, 50% beat drop off
 
 ======
 ||
@@ -18,15 +23,37 @@ Base Beat Cycles
 	a=attack
 	f=frequency
 	x={ -(1/(f*PI))*arcsin((1/a)*sqrt(-ln(0.5))), (1/(f*PI))*arcsin((1/a)*sqrt(-ln(0.5)))}
+	
+	one for primary beat
+	one for off beat
 Melody Array
 	bool[88] (for number of piano keys)
-	global attack value
+	global attack, sustain, release value
 	global harmonics value
 -----
 ||
 \/
 ======
+Process
 
+Has multiple selectable modes
+Holds different music states
+	5 general states for dance entropy
+Processes prediction as well
+melody prediction
+	inputs a melody and fits a curve to the melody to predict it's future form
+
+======
+||
+-----
+music state
+Primary and off beat cycles
+
+-----
+||
+\/
+======
+Display
 
 
 ======

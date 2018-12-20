@@ -15,6 +15,8 @@
 
 #define MIN(a,b) ((a)<=(b)?(a):(b))
 #define MAX(a,b) ((a)>=(b)?(a):(b))
+#define PI M_PIl
+#define TAU (2.0*PI)
 
 typedef unsigned char u8;
 typedef unsigned short u16;

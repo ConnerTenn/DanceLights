@@ -27,8 +27,6 @@ public:
 	void operator=(const RoundBuffer<T> &other);
 };
 
-const double PI = 3.141592653589793238460;
-
 
 template<class Ty>
 void FftInplace(Ty &x);
