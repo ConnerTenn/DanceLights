@@ -4,6 +4,8 @@ Data Pipeline
 ======
 Input
 
+Runs asynchronously to the Process layer
+
 Receives the raw audio.
 Does FFT analysis.
 Clean and filter
@@ -26,10 +28,18 @@ Base Beat Cycles
 	
 	one for primary beat
 	one for off beat
+	
+	Sent as a 'raw refresh'. No history logging
+	
 Melody Array
-	bool[88] (for number of piano keys)
+	array [88] (for number of piano keys)
 	global attack, sustain, release value
 	global harmonics value
+	
+	Sent as an update to indicate the new active notes
+	
+Latency?
+
 -----
 ||
 \/
@@ -57,3 +67,5 @@ Display
 
 
 ======
+
+

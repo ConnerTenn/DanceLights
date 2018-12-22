@@ -1,7 +1,10 @@
 
 #include "DanceController.h"
 
-void DanceController::Update()
+void DanceController::UpdateLoop()
 {
-	
+	while (Run)
+	{
+		
+	}
 }

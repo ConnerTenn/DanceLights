@@ -19,7 +19,11 @@ void set_conio_terminal_mode()
 
 	// register cleanup handler, and set the new terminal mode
 	atexit(reset_terminal_mode);
-	cfmakeraw(&new_termios);
+	//cfmakeraw(&new_termios);
+	new_termios.c_lflag &= ~(ECHO | ECHONL| ICANON | IEXTEN);
+	
+	//new_termios.c_oflag |= ONLCR;
+	//new_termios.c_lflag |= ISIG;
 	tcsetattr(0, TCSANOW, &new_termios);
 }
 
