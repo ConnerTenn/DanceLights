@@ -1,11 +1,13 @@
 
 GPP=g++ -Wall -std=c++17
 LAUDIO=../libportaudio.a -lasound -ljack -pthread
+LMAD=../libmad/*.o -I ../libmad/
+LIBS = $(LMAD) -lpthread
 
 all: program
 
 program: main.o LightStrip.o DanceLight.o DanceController.o Spectrum.o Screen.o Globals.o
-	$(GPP) $^ -o $@
+	$(GPP) $^ $(LIBS) -o $@
 	
 main.o: main.cpp DanceController.h Spectrum.h Screen.h Globals.h
 	$(GPP) $< -c -o $@
