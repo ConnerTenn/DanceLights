@@ -1,8 +1,6 @@
 
 #include "InputController.h"
 
-bool *RunInput;
-
 struct Buffer 
 {
 	char *start;
@@ -46,20 +44,22 @@ static enum mad_flow output(void *data, struct mad_header const *header, struct 
 {	
 	//std::cout << "Output Data\n";
 	unsigned int nchannels, nsamples;
-	mad_fixed_t *channels[2];
+	//mad_fixed_t *channels[2];
 
 	/* pcm->samplerate contains the sampling frequency */
 
 	nchannels = pcm->channels;
 	nsamples = pcm->length;
-	channels[0] = pcm->samples[0];
-	channels[1] = pcm->samples[1];
+	//channels[0] = pcm->samples[0];
+	//channels[1] = pcm->samples[1];
+	
+	mad_fixed_t samples[1152];
 
-	while (nsamples--) 
+	/*while (nsamples--) 
 	{
 		//int sample;
 
-		/* output sample(s) in 16-bit signed little-endian PCM */
+		//output sample(s) in 16-bit signed little-endian PCM
 		for (unsigned int c = 0; c < nchannels; c++)
 		{
 			//sample = scale(*channels[c]);
@@ -70,10 +70,24 @@ static enum mad_flow output(void *data, struct mad_header const *header, struct 
 			
 			channels[c]++;
 		}
+	}*/
+	
+	for (u32 i = 0; i < nsamples; i++)
+	{
+		samples[i] = pcm->samples[0][i];
+		if (nchannels==2) { samples[i] += pcm->samples[1][i]; samples[i] = samples[i]/2; }
+		
+		samples[i] = scale(samples[i]);
 	}
 	
-	if (!*RunInput) { return MAD_FLOW_STOP; }
-	usleep(10000);
+	if (InputController::Run)
+	{
+		InputController::Callback(samples,nsamples);
+	}	
+	else { return MAD_FLOW_STOP; }
+	
+	usleep(1000*1000);
+	
 	return MAD_FLOW_CONTINUE;
 }
 static enum mad_flow error(void *data, struct mad_stream *stream, struct mad_frame *frame)
@@ -84,17 +98,19 @@ static enum mad_flow error(void *data, struct mad_stream *stream, struct mad_fra
 }
 
 
+
+bool InputController::Run = true;
+
 void InputController::Callback(int *samples, int length)
 {
-	
+	std::cout << "Callback\n";
+	DanceController::Input({},{},{});
 }
 
 void InputController::InputFromFile(std::string filename)
 {
 	Buffer buffer;
 	mad_decoder decoder;
-	
-	RunInput = &Run;
 	
 	//std::cout << "Opening file "<<filename<<"\n";
 	

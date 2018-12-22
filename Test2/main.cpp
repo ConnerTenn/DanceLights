@@ -3,19 +3,25 @@
 #include "DanceController.h"
 #include "InputController.h"
 
-DanceController Dance;
-InputController Input;
+//DanceController Dance;
+//InputController Input;
+
+class FOO
+{
+public:
+	static int gg;
+};
 
 void InputProgram()
 {
 	std::cout << "Beginning Init Program\n";
-	Input.InputFromFile("audio.mp3");
+	InputController::InputFromFile("audio.mp3");
 }
 
 void DanceProgram()
 {
 	std::cout << "Beginning Dance Program\n";
-	Dance.UpdateLoop();
+	DanceController::UpdateLoop();
 }
 
 int main(int argc, char **argv)
@@ -28,10 +34,13 @@ int main(int argc, char **argv)
 	std::thread danceThread(DanceProgram);
 	std::thread inputThread(InputProgram);
 	
+	
 	while(!kbhit()) { }
 	getch();
-	Dance.Run = false;
-	Input.Run = false;
+	DanceController::Run = false;
+	InputController::Run = false;
+	
+	std::cout << "Stopping...\n";
 	
 	danceThread.join();
 	inputThread.join();

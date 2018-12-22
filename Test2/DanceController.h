@@ -1,4 +1,9 @@
 
+class DanceController;
+
+#ifndef _DANCE_CONTROLLER_H_
+#define _DANCE_CONTROLLER_H_
+
 #include "Globals.h"
 #include "Screen.h"
 #include "DanceLight.h"
@@ -10,17 +15,18 @@
 class DanceController
 {
 public:
-	BeatCycle PrimaryBeat;
-	BeatCycle OffBeat;
-	bool Run = true;
+	static BeatCycle PrimaryBeat;
+	static BeatCycle OffBeat;
+	static bool Run;
 	
-	time_t LastUpdate;
+	static time_t LastUpdate;
 	
-	std::vector<DanceLight> DanceLightList;
+	static std::vector<DanceLight> DanceLightList;
 	
 	//Asynchronous
-	void Input(BeatCycle primayBeat, BeatCycle secondaryBeat, Melody mainMelody);
+	static void Input(BeatCycle primayBeat, BeatCycle secondaryBeat, Melody mainMelody);
 	
-	void UpdateLoop();
+	static void UpdateLoop();
 };
 
+#endif
