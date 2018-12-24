@@ -38,6 +38,10 @@ template<class Ty>
 void Ifft(Ty &x);
 
 
+/*
+Definitions
+*/
+
 
 template<class T>
 RoundBuffer<T>::RoundBuffer() :
@@ -105,10 +109,10 @@ void RoundBuffer<T>::operator=(const RoundBuffer<T> &other)
 
 
 template<class Ty>
-void FftInplace(Ty &x)
+void FftInplace(Ty &x, u32 N)
 {
 	// DFT
-	u32 N = x.Size(), k = N, n;
+	u32 k = N, n;
 	double thetaT = 3.14159265358979323846264338328L / N;
 	Complex phiT = Complex(cos(thetaT), -sin(thetaT)), T;
 	while (k > 1)
@@ -157,17 +161,16 @@ void FftInplace(Ty &x)
 }
 
 template<class Ty>
-void IfftInplace(Ty &x)
+void IfftInplace(Ty &x, u32 size)
 {
-	int size = x.Size();
-	for (int i = 0; i < size; i++)
+	for (u32 i = 0; i < size; i++)
 	{
 		x[i] = std::conj(x[i]*(size/4.9));
 	}
  
 	FftInplace(x);
 
-	for (int i = 0; i < size; i++)
+	for (u32 i = 0; i < size; i++)
 	{
 		x[i] = std::conj(x[i]);
 	}
@@ -175,18 +178,21 @@ void IfftInplace(Ty &x)
 
 
 template<class Ty>
-void Fft(Ty &x)
+void Fft(Ty &x, u32 size)
 {
-	Ty arr; 
-	FftInplace(arr);
+	Ty arr;
+	//for (u32 i = 0; i < size; i++) { arr[i] = x}
+	arr = x;
+	FftInplace(arr, size);
 	return arr;
 }
 
 template<class Ty>
-void Ifft(Ty &x)
+void Ifft(Ty &x, u32 size)
 {
-	Ty arr; 
-	IfftInplace(arr);
+	Ty arr;
+	arr = x;
+	IfftInplace(arr, size);
 	return arr;
 }
 
