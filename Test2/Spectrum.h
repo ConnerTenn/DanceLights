@@ -29,13 +29,13 @@ public:
 
 
 template<class Ty>
-void FftInplace(Ty &x);
+void FftInplace(Ty &x, u32 N);
 template<class Ty>
-void IfftInplace(Ty &x);
+void IfftInplace(Ty &x, u32 size);
 template<class Ty>
-void Fft(Ty &x);
+void Fft(Ty &x, u32 size);
 template<class Ty>
-void Ifft(Ty &x);
+void Ifft(Ty &x, u32 size);
 
 
 /*

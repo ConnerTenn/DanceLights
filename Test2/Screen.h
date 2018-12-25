@@ -20,6 +20,7 @@
 #define CLRLINE CSI("0","K")
 
 #define MOVETO(x,y) CSI(<<(y)<<";"<<(x)<<, "H")
+#define MOVEREL(x,y) CSI(<<((y)<0?-(y)+1:0)<<,"A") << CSI(<<((y)>0?(y)+1:0)<<,"B") << CSI(<<((x)>0?(x)+1:0)<<,"C") << CSI(<<((x)<0?-(x)+1:0)<<,"D")
 #define FCOLOUR(r,g,b) CSI("38;2;"<<(r)<<";"<<(g)<<";"<<(b)<<,"m")
 #define BCOLOUR(r,g,b) CSI("48;2;"<<(r)<<";"<<(g)<<";"<<(b)<<,"m")
 #define PRINT(s) std::cout<<s<<std::flush

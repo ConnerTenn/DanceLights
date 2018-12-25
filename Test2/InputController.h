@@ -15,14 +15,17 @@ class InputController
 {
 public:
 	static bool Run;
-	const static int BufferLen = 512;
-	const static int SampleRate = 44100;
-	const static double BufferDuration;
+	const static int CallbackLen = 128;
+	const static int BufferLen = 1024;
+	const static int HistLen = 512;
+	//const static int SampleRate = 44100;
+	//const static double BufferDuration;
 	
-	static RoundBuffer<int> SampleBuffer;
+	static RoundBuffer<double> SampleBuffer;
+	static RoundBuffer<Array<Complex, BufferLen/2>> SpectrumHist;
 	
-	static void Callback(int samples[BufferLen]);
-	static void StageSamples(int *samples, u32 length);
+	static void Callback(double samples[CallbackLen]);
+	static void StageSamples(double *samples, int length);
 
 	static void InputFromFile(std::string filename);
 };

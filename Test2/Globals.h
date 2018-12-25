@@ -40,7 +40,7 @@ struct RGB
 	u8 G = 0;
 	u8 B = 0;
 
-	u8 operator[](int i);
+	const u8 operator[](int i);
 };
 
 
@@ -51,13 +51,15 @@ struct Array
 	
 	Array();
 	Array(std::initializer_list<T> list);
-	Array(const Array<T, N> &other);
+	Array(Array<T, N> &other);
 	int Size();
 	T &operator[](int i);
-	void Copy(const Array<T, N> &other);
+	void Copy(Array<T, N> &other);
 };
 
 
+template<class T, int N>
+Array<T,N>::Array() { }
 
 template<class T, int N>
 Array<T,N>::Array(std::initializer_list<T> list)
@@ -66,7 +68,7 @@ Array<T,N>::Array(std::initializer_list<T> list)
 }
 
 template<class T, int N>
-Array<T,N>::Array(const Array<T, N> &other)
+Array<T,N>::Array(Array<T, N> &other)
 {
 	for (int i = 0; i < N; i++) { Values[i] = other[i]; }
 }
@@ -78,7 +80,7 @@ template<class T, int N>
 T &Array<T,N>::operator[](int i) { return Values[i]; }
 
 template<class T, int N>
-void Array<T,N>::Copy(const Array<T, N> &other)
+void Array<T,N>::Copy(Array<T, N> &other)
 {
 	for (int i = 0; i < N; i++) { Values[i] = other[i]; }
 }

@@ -1,32 +1,40 @@
 
 #include "InputController.h"
 
-struct Buffer 
-{
-	char *start;
-	unsigned long length;
-};
-
 
 bool InputController::Run = true;
-const double InputController::BufferDuration = (double)InputController::BufferLen * 1.0/(double)InputController::SampleRate;
+//const double InputController::BufferDuration = (double)InputController::BufferLen * 1.0/(double)InputController::SampleRate;
 
-RoundBuffer<int> InputController::SampleBuffer(InputController::BufferLen);
+RoundBuffer<double> InputController::SampleBuffer(InputController::BufferLen);
+RoundBuffer<Array<Complex, InputController::BufferLen/2>> InputController::SpectrumHist;
 	
 //Screen TextScreen(200, 21);
 
-void InputController::Callback(int samples[BufferLen])
+void InputController::Callback(double samples[CallbackLen])
 {
 	std::cout << "Callback\n";
+	
+	for (int i = 0; i < CallbackLen; i++)
+	{
+		SampleBuffer.InsertBegin(samples[i]);
+	}
+	
+	Complex spectrum[BufferLen];
+	for (int i = 0; i < BufferLen; i++) { spectrum[i] = SampleBuffer[i]; }
+	FftInplace(spectrum, BufferLen);
+	Array<Complex, BufferLen/2> spectrum2;
+	for (int i = 0; i < BufferLen/2; i++) { spectrum2[i] = spectrum[i]; }
+	SpectrumHist.InsertBegin(spectrum2);
+	
 }
 
-int StagingBuffer[InputController::BufferLen];
+double StagingBuffer[InputController::BufferLen];
 u32 StagingFill = 0;
 
-void InputController::StageSamples(int *samples, u32 length)
+void InputController::StageSamples(double *samples, int length)
 {
 	std::cout << "StageSamples\n";
-	for (u32 i = 0; i < length; i++)
+	for (int i = 0; i < length; i++)
 	{
 		StagingBuffer[StagingFill] = samples[i];
 		StagingFill++;
@@ -38,6 +46,12 @@ void InputController::StageSamples(int *samples, u32 length)
 		}
 	}
 }
+
+struct Buffer
+{
+	char *start;
+	unsigned long length;
+};
 
 static mad_flow input(void *data, mad_stream *stream);
 static mad_flow output(void *data, mad_header const *header, mad_pcm *pcm);
@@ -118,12 +132,12 @@ static mad_flow output(void *data, mad_header const *header, mad_pcm *pcm)
 	nchannels = pcm->channels;
 	nsamples = pcm->length;
 	
-	mad_fixed_t samples[1152];
+	double samples[1152];
 	
 	for (u32 i = 0; i < nsamples; i++)
 	{
-		samples[i] = pcm->samples[0][i];
-		if (nchannels==2) { samples[i] += pcm->samples[1][i]; samples[i] = samples[i]/2; }
+		samples[i] = (double)pcm->samples[0][i]/MAD_F_ONE;
+		if (nchannels==2) { samples[i] += (double)pcm->samples[1][i]/MAD_F_ONE; samples[i] = samples[i]/2.0; }
 		//samples[i] = scale(samples[i]);
 	}
 	
