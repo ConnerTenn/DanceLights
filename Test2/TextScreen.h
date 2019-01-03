@@ -39,7 +39,7 @@ struct ColourChar
 	char Character = 0;
 };
 
-class Screen
+class TextScreen
 {
 	int Width = 0;
 	int Height = 0;
@@ -47,10 +47,10 @@ class Screen
 public:
 	bool ClearOnClose = true;
 	
-	Screen();
-	Screen(int height);
-	Screen(int width, int height);
-	~Screen();
+	TextScreen();
+	TextScreen(int height);
+	TextScreen(int width, int height);
+	~TextScreen();
 
 	void Clear();
 	Array<int,2> GetDimensions();
@@ -68,5 +68,19 @@ private:
 };
 
 RGB RGBFade(double val);
+
+class TerminalBuffer
+{
+private:	
+	RoundBuffer<std::string> Buffer;
+	int X; 
+	int Y;
+public:
+	TerminalBuffer(int x, int y, int length);
+	void Write(std::string text);
+	void Display();
+};
+
+extern TerminalBuffer TermBuffer;
 
 #endif

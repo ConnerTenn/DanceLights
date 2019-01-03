@@ -1,6 +1,6 @@
 
 
-#include "Screen.h"
+#include "TextScreen.h"
 
 struct termios orig_termios;
 
@@ -44,12 +44,12 @@ int getch()
 	else { return c; }
 }
 
-Screen::Screen()
+TextScreen::TextScreen()
 {
 	Array<int, 2> dimensions = GetDimensions();
-	Screen(dimensions[0], dimensions[1]);
+	TextScreen(dimensions[0], dimensions[1]);
 }
-Screen::Screen(int width, int height)
+TextScreen::TextScreen(int width, int height)
 {
 	Array<int, 2> dimensions = GetDimensions();
 	Width = MIN(width,dimensions[0]); Height = MIN(height,dimensions[1]);
@@ -67,7 +67,7 @@ Screen::Screen(int width, int height)
 		}
 	}
 }
-Screen::~Screen()
+TextScreen::~TextScreen()
 {
 	if (ClearOnClose) { PRINT(RESET CSI("2","J") MOVETO(0,0)); }
 	for (int y = 0; y < Height; y++)
@@ -77,12 +77,12 @@ Screen::~Screen()
 	delete[] ScreenBuffer;
 }
 
-void Screen::Clear()
+void TextScreen::Clear()
 {
 	PRINT(MOVETO(Width-1, Height-1) CSI("1","J"));
 }
 
-Array<int,2> Screen::GetDimensions()
+Array<int,2> TextScreen::GetDimensions()
 {
 	//Array<int,2> dimensions;
 	
@@ -123,7 +123,7 @@ Array<int,2> Screen::GetDimensions()
 	return {(int)w.ws_col, (int)w.ws_row};
 }
 
-void Screen::Draw(int x, int y, RGB foreground, RGB background, char character)
+void TextScreen::Draw(int x, int y, RGB foreground, RGB background, char character)
 {
 	if (x>=0 && y>=0 && x < Width && y < Height)
 	{
@@ -135,14 +135,14 @@ void Screen::Draw(int x, int y, RGB foreground, RGB background, char character)
 	}
 }
 #include <sstream>
-void Screen::DrawToBuffer(int x, int y, RGB foreground, RGB background, char character)
+void TextScreen::DrawToBuffer(int x, int y, RGB foreground, RGB background, char character)
 {
 	if (x>=0 && y>=0 && x < Width && y < Height)
 	{
 		ScreenBuffer[y][x] = {foreground, background, character};
 	}
 }
-void Screen::ClearBuffer()
+void TextScreen::ClearBuffer()
 {
 	for (int y = 0; y < Height; y++)
 	{
@@ -152,7 +152,7 @@ void Screen::ClearBuffer()
 		}
 	}
 }
-void Screen::DisplayBuffer()
+void TextScreen::DisplayBuffer()
 {
 	std::stringstream out;
 	for (int y = 0; y < Height; y++)
@@ -171,14 +171,14 @@ void Screen::DisplayBuffer()
 	
 }
 
-int Screen::GetWidth() { return Width; }
-int Screen::GetHeight() { return Height; }
+int TextScreen::GetWidth() { return Width; }
+int TextScreen::GetHeight() { return Height; }
 
-void Screen::SavePosition()
+void TextScreen::SavePosition()
 {
 	PRINT(CSI(,"s"));
 }
-void Screen::RecoverPosition()
+void TextScreen::RecoverPosition()
 {
 	PRINT(CSI(,"u") RESET);
 }
@@ -189,5 +189,28 @@ RGB RGBFade(double val)
 	u8 G = (u8)(255.0*MAX(0, val<2.0/3.0? 3.0*(val-1.0/3.0) : 1.0-(val-2.0/3.0)*3.0));
 	u8 B = (u8)(255.0*MAX(0, val<3.0/3.0? 3.0*(val-2.0/3.0) : 1.0-(val-3.0/3.0)*3.0));
 	return {R,G,B};
+}
+
+
+TerminalBuffer::TerminalBuffer(int x, int y, int length) :
+	Buffer(length)
+{
+	X = x;
+	Y = y;
+}
+
+void TerminalBuffer::Write(std::string text)
+{
+	static int count = 0;
+	Buffer.InsertBegin(std::to_string(count++) + ": " + text);
+}
+
+void TerminalBuffer::Display()
+{
+	for (int i = 0; i < Buffer.Size(); i++)
+	{
+		PixelTerm::DrawText(X, i*15+Y, Buffer[i], {0xff,0xff,0xff});
+		//std::cout << Buffer[i] << "\n";
+	}
 }
 

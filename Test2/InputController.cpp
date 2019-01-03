@@ -6,41 +6,33 @@ bool InputController::Run = true;
 //const double InputController::BufferDuration = (double)InputController::BufferLen * 1.0/(double)InputController::SampleRate;
 
 RoundBuffer<double> InputController::SampleBuffer(InputController::BufferLen);
-RoundBuffer<Array<Complex, InputController::BufferLen/2>> InputController::SpectrumHist(InputController::HistLen);
-	
-Screen TextScreen(InputController::BufferLen/2, InputController::HistLen);
+RoundBuffer<Array<ComplexD, InputController::BufferLen/2>> InputController::SpectrumHist(InputController::HistLen);
+
 
 void InputController::Callback(double samples[CallbackLen])
 {
-	std::cout << "Callback\n";
-	TextScreen.ClearBuffer();
+	//std::cout << "Callback\n";
+	TermBuffer.Write("Callback");
 	
 	for (int i = 0; i < CallbackLen; i++)
 	{
 		SampleBuffer.InsertBegin(samples[i]);
 	}
 	
-	Complex spectrum[BufferLen];
+	ComplexD spectrum[BufferLen];
 	for (int i = 0; i < BufferLen; i++) { spectrum[i] = SampleBuffer[i]; }
 	FftInplace(spectrum, BufferLen);
-	Array<Complex, BufferLen/2> spectrum2;
+	Array<ComplexD, BufferLen/2> spectrum2;
 	for (int i = 0; i < BufferLen/2; i++) { spectrum2[i] = spectrum[i]; }
 	SpectrumHist.InsertBegin(spectrum2);
 	
-	for (int i = 0; i < SpectrumHist.Size(); i++)
-	{
-		for (int j = 0; j < BufferLen/2; j++)
-		{
-			//std::cout << SpectrumHist[i][j] << " ";
-			u16 colourtmp = (u16)(std::abs(SpectrumHist[i][j]) *4* 255.0);
-			u8 colour = (colourtmp>255?255:colourtmp);
-			TextScreen.DrawToBuffer(j, i, {0,0,0}, {colour,colour, colour}, ' ');
-		}
-	}
+	PixelTerm::ForceClear();
 	
-	TextScreen.DisplayBuffer();
-	static int count = 0;
-	std::cout << count++ << "\n";
+	TermBuffer.Display();
+	float elapsed = (GetMilliseconds() - StartTime)/1000.00;
+	PixelTerm::DrawText(10, 900-20, std::to_string(elapsed), {0xff,0xff,0xff});
+	
+	PixelTerm::Draw();
 }
 
 double StagingBuffer[InputController::BufferLen];
@@ -49,7 +41,8 @@ u32 StagingFill = 0;
 template<class T>
 void InputController::StageSamples(T *samples, int length)
 {
-	std::cout << "StageSamples\n";
+	//std::cout << "StageSamples\n";
+	TermBuffer.Write("StageSamples");
 	for (int i = 0; i < length; i++)
 	{
 		StagingBuffer[StagingFill] = (double)samples[i];

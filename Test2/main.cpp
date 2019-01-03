@@ -1,10 +1,13 @@
 
 #include "Globals.h"
+#include "TextScreen.h"
 #include "DanceController.h"
 #include "InputController.h"
 
 //DanceController Dance;
 //InputController Input;
+u64 StartTime = GetMilliseconds();
+TerminalBuffer TermBuffer(10, 900, 30);
 
 class FOO
 {
@@ -29,6 +32,7 @@ int main(int argc, char **argv)
 {
 	set_conio_terminal_mode();
 	
+	PixelTerm::Init();
 	//if (argc != 2) { std::cout << "ERROR: Incorrect Arguments\n"; return 1; } 
 	
 	std::cout << "Starting threads\n";
@@ -47,6 +51,8 @@ int main(int argc, char **argv)
 	inputThread.join();
 	
 	std::cout << "Done\n";
+	
+	PixelTerm::Close();
 	reset_terminal_mode();
 	return 0;
 }

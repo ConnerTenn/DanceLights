@@ -15,6 +15,8 @@
 #include <cstring>
 #include <thread>
 
+#include <PixelTerm.h>
+
 #define MIN(a,b) ((a)<=(b)?(a):(b))
 #define MAX(a,b) ((a)>=(b)?(a):(b))
 #define PI M_PIl
@@ -25,23 +27,16 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 typedef unsigned long long u64;
 
-typedef std::complex<double> Complex;
+typedef std::complex<double> ComplexD;
 
 
 u64 GetMilliseconds();
 u64 GetMicroseconds();
 u64 GetNanoseconds();
 
+extern u64 StartTime;
+
 double Mag(std::complex<double> val);
-
-struct RGB
-{
-	u8 R = 0;
-	u8 G = 0;
-	u8 B = 0;
-
-	const u8 operator[](int i);
-};
 
 
 template<class T, int N>
@@ -56,6 +51,35 @@ struct Array
 	T &operator[](int i);
 	void Copy(Array<T, N> &other);
 };
+
+template<class T>
+class RoundBuffer
+{
+private:
+	int Length = 0;
+	T *Buffer = 0;
+	int Begin = 0;
+	
+public:
+	//RoundBuffer();
+	RoundBuffer(int len);
+	RoundBuffer(const RoundBuffer<T> &other);
+	~RoundBuffer();
+	
+private:
+	int Transform(int i);
+	
+public:
+	int Size();
+	void InsertBegin(T val);
+	
+	T &operator[](int i);
+	void operator=(const RoundBuffer<T> &other);
+};
+
+
+
+
 
 
 template<class T, int N>
@@ -83,6 +107,70 @@ template<class T, int N>
 void Array<T,N>::Copy(Array<T, N> &other)
 {
 	for (int i = 0; i < N; i++) { Values[i] = other[i]; }
+}
+
+
+
+
+
+template<class T>
+RoundBuffer<T>::RoundBuffer(int len) :
+	Length(len)
+{
+	Buffer = new T[Length];
+	Begin=0;
+}
+
+template<class T>
+RoundBuffer<T>::RoundBuffer(const RoundBuffer<T> &other)
+{
+	(*this) = other;
+}
+
+template<class T>
+RoundBuffer<T>::~RoundBuffer()
+{
+	delete[] Buffer;
+}
+
+template<class T>
+int RoundBuffer<T>::Size() { return Length; }
+
+template<class T>
+int RoundBuffer<T>::Transform(int i) 
+{
+	if (Length==0) { throw std::domain_error("div/0"); }
+	int v = i+Begin;
+	v = v%Length + (v<0?Length:0);
+	return v;  
+}
+
+template<class T>
+void RoundBuffer<T>::InsertBegin(T val) 
+{
+	Begin = Transform(-1);
+	(*this)[0] = val;
+}
+
+template<class T>
+T &RoundBuffer<T>::operator[](int i)
+{
+	//std::cout << "operator["<<i<<"]\n";
+	return Buffer[Transform(i)];
+}
+
+template<class T>
+void RoundBuffer<T>::operator=(const RoundBuffer<T> &other)
+{
+	//std::cout << "operator=\n";
+	Length = other.Length;
+	if (Buffer) { delete[] Buffer; }
+	Buffer = new T[Length];
+	Begin=other.Begin;
+	for (int i = 0; i < Length; i++)
+	{
+		Buffer[i] = other.Buffer[i];
+	}
 }
 
 #endif

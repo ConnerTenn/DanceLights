@@ -11,6 +11,7 @@ class InputController;
 #include "DanceTypes.h"
 #include "Spectrum.h"
 #include "DanceController.h"
+#include "TextScreen.h"
 
 class InputController
 {
@@ -23,7 +24,7 @@ public:
 	//const static double BufferDuration;
 	
 	static RoundBuffer<double> SampleBuffer;
-	static RoundBuffer<Array<Complex, BufferLen/2>> SpectrumHist;
+	static RoundBuffer<Array<ComplexD, BufferLen/2>> SpectrumHist;
 	
 	static void Callback(double samples[CallbackLen]);
 	template<class T>

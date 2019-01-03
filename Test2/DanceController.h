@@ -5,7 +5,6 @@ class DanceController;
 #define _DANCE_CONTROLLER_H_
 
 #include "Globals.h"
-#include "Screen.h"
 #include "DanceLight.h"
 #include "DanceTypes.h"
 

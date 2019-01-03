@@ -2,31 +2,6 @@
 #include "Globals.h"
 #include <array>
 
-template<class T>
-class RoundBuffer
-{
-private:
-	int Length = 0;
-	T *Buffer = 0;
-	int Begin = 0;
-	
-public:
-	//RoundBuffer();
-	RoundBuffer(int len);
-	RoundBuffer(const RoundBuffer<T> &other);
-	~RoundBuffer();
-	
-private:
-	int Transform(int i);
-	
-public:
-	int Size();
-	void InsertBegin(T val);
-	
-	T &operator[](int i);
-	void operator=(const RoundBuffer<T> &other);
-};
-
 
 template<class Ty>
 void FftInplace(Ty &x, u32 N);
@@ -51,65 +26,7 @@ RoundBuffer<T>::RoundBuffer() :
 	Begin=0;
 }*/
 
-template<class T>
-RoundBuffer<T>::RoundBuffer(int len) :
-	Length(len)
-{
-	Buffer = new T[Length];
-	Begin=0;
-}
 
-template<class T>
-RoundBuffer<T>::RoundBuffer(const RoundBuffer<T> &other)
-{
-	(*this) = other;
-}
-
-template<class T>
-RoundBuffer<T>::~RoundBuffer()
-{
-	delete[] Buffer;
-}
-
-template<class T>
-int RoundBuffer<T>::Size() { return Length; }
-
-template<class T>
-int RoundBuffer<T>::Transform(int i) 
-{
-	if (Length==0) { throw std::domain_error("div/0"); }
-	int v = i+Begin;
-	v = v%Length + (v<0?Length:0);
-	return v;  
-}
-
-template<class T>
-void RoundBuffer<T>::InsertBegin(T val) 
-{
-	Begin = Transform(-1);
-	(*this)[0] = val;
-}
-
-template<class T>
-T &RoundBuffer<T>::operator[](int i)
-{
-	//std::cout << "operator["<<i<<"]\n";
-	return Buffer[Transform(i)];
-}
-
-template<class T>
-void RoundBuffer<T>::operator=(const RoundBuffer<T> &other)
-{
-	//std::cout << "operator=\n";
-	Length = other.Length;
-	if (Buffer) { delete[] Buffer; }
-	Buffer = new T[Length];
-	Begin=other.Begin;
-	for (int i = 0; i < Length; i++)
-	{
-		Buffer[i] = other.Buffer[i];
-	}
-}
 
 
 template<class Ty>
@@ -118,7 +35,7 @@ void FftInplace(Ty &x, u32 N)
 	// DFT
 	u32 k = N, n;
 	double thetaT = 3.14159265358979323846264338328L / N;
-	Complex phiT = Complex(cos(thetaT), -sin(thetaT)), T;
+	ComplexD phiT = ComplexD(cos(thetaT), -sin(thetaT)), T;
 	while (k > 1)
 	{
 		n = k;
@@ -130,7 +47,7 @@ void FftInplace(Ty &x, u32 N)
 			for (unsigned int a = l; a < N; a += n)
 			{
 				unsigned int b = a + k;
-				Complex t = x[a] - x[b];
+				ComplexD t = x[a] - x[b];
 				x[a] += x[b];
 				x[b] = t * T;
 			}
@@ -150,17 +67,17 @@ void FftInplace(Ty &x, u32 N)
 		b = ((b >> 16) | (b << 16)) >> (32 - m);
 		if (b > a)
 		{
-			Complex t = x[a];
+			ComplexD t = x[a];
 			x[a] = x[b];
 			x[b] = t;
 		}
 	}
 	//// Normalize (This section make it not working correctly)
-	//Complex f = 1.0 / sqrt(N);
+	//ComplexD f = 1.0 / sqrt(N);
 	//for (unsigned int i = 0; i < N; i++)
 	//	x[i] *= f;
 	
-	Complex f = 2.0/N; 
+	ComplexD f = 2.0/N; 
 	for (unsigned int i = 0; i < N; i++) { x[i] *= f; }
 }
 
