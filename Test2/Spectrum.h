@@ -1,6 +1,6 @@
 
 #include "Globals.h"
-#include <valarray>
+#include <array>
 
 template<class T>
 class RoundBuffer
@@ -11,7 +11,7 @@ private:
 	int Begin = 0;
 	
 public:
-	RoundBuffer();
+	//RoundBuffer();
 	RoundBuffer(int len);
 	RoundBuffer(const RoundBuffer<T> &other);
 	~RoundBuffer();
@@ -42,14 +42,14 @@ void Ifft(Ty &x, u32 size);
 Definitions
 */
 
-
+/*
 template<class T>
 RoundBuffer<T>::RoundBuffer() :
 	Length(0)
 {
 	Buffer=0;
 	Begin=0;
-}
+}*/
 
 template<class T>
 RoundBuffer<T>::RoundBuffer(int len) :
@@ -77,26 +77,30 @@ int RoundBuffer<T>::Size() { return Length; }
 template<class T>
 int RoundBuffer<T>::Transform(int i) 
 {
+	if (Length==0) { throw std::domain_error("div/0"); }
 	int v = i+Begin;
 	v = v%Length + (v<0?Length:0);
-	return v; 
+	return v;  
 }
 
 template<class T>
 void RoundBuffer<T>::InsertBegin(T val) 
 {
-	(*this)[-1] = val;
+	Begin = Transform(-1);
+	(*this)[0] = val;
 }
 
 template<class T>
 T &RoundBuffer<T>::operator[](int i)
 {
+	//std::cout << "operator["<<i<<"]\n";
 	return Buffer[Transform(i)];
 }
 
 template<class T>
 void RoundBuffer<T>::operator=(const RoundBuffer<T> &other)
 {
+	//std::cout << "operator=\n";
 	Length = other.Length;
 	if (Buffer) { delete[] Buffer; }
 	Buffer = new T[Length];

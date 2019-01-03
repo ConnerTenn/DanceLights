@@ -2,7 +2,7 @@
 GPP=g++ -Wall -std=c++17
 LAUDIO=../libportaudio.a -lasound -ljack -pthread
 LMAD=../libmad/*.o -I ../libmad/
-LIBS = $(LMAD) -lpthread
+LIBS = $(LMAD) $(LAUDIO) -lpthread
 
 all: program
 

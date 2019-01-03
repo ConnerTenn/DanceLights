@@ -69,7 +69,7 @@ Screen::Screen(int width, int height)
 }
 Screen::~Screen()
 {
-	PRINT(RESET CSI("2","J") MOVETO(0,0));
+	if (ClearOnClose) { PRINT(RESET CSI("2","J") MOVETO(0,0)); }
 	for (int y = 0; y < Height; y++)
 	{
 		delete[] ScreenBuffer[y];

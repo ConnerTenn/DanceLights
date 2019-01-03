@@ -5,6 +5,7 @@ class InputController;
 #define _INPUT_CONTROLLER_H_
 
 #include "mad.h"
+#include <portaudio.h>
 #include <fstream>
 #include "Globals.h"
 #include "DanceTypes.h"
@@ -17,7 +18,7 @@ public:
 	static bool Run;
 	const static int CallbackLen = 128;
 	const static int BufferLen = 1024;
-	const static int HistLen = 512;
+	const static int HistLen = 12;//512;
 	//const static int SampleRate = 44100;
 	//const static double BufferDuration;
 	
@@ -25,9 +26,11 @@ public:
 	static RoundBuffer<Array<Complex, BufferLen/2>> SpectrumHist;
 	
 	static void Callback(double samples[CallbackLen]);
-	static void StageSamples(double *samples, int length);
+	template<class T>
+	static void StageSamples(T *samples, int length);
 
 	static void InputFromFile(std::string filename);
+	static void InputFromMic();
 };
 
 #endif

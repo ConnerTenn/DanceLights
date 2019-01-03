@@ -45,6 +45,8 @@ class Screen
 	int Height = 0;
 	ColourChar **ScreenBuffer;
 public:
+	bool ClearOnClose = true;
+	
 	Screen();
 	Screen(int height);
 	Screen(int width, int height);

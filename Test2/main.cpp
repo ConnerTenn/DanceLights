@@ -16,6 +16,7 @@ void InputProgram()
 {
 	std::cout << "Beginning Init Program\n";
 	InputController::InputFromFile("audio.mp3");
+	//InputController::InputFromMic();
 }
 
 void DanceProgram()
@@ -49,3 +50,23 @@ int main(int argc, char **argv)
 	reset_terminal_mode();
 	return 0;
 }
+
+int main2()
+{
+	std::cout << sizeof(float) << " " << sizeof(double) << "\n";
+	RoundBuffer<int> buff(10);
+	
+	for (int i = 0; i < 30; i++)
+	{
+		buff.InsertBegin(i);
+		
+		for (int j = 0; j < 10; j++)
+		{
+			std::cout << buff[j] << " ";
+		}
+		std::cout << "\n";
+	}
+	
+	return 0;
+}
+
