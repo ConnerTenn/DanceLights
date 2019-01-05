@@ -18,20 +18,24 @@ class InputController
 public:
 	static bool Run;
 	const static int CallbackLen = 128;
-	const static int BufferLen = 1024;
-	const static int HistLen = 12;//512;
+	const static int BufferLen = 512;
+	const static int HistLen = 64;//512;
 	//const static int SampleRate = 44100;
 	//const static double BufferDuration;
 	
+	//samples in range [-1, +1]
+	
 	static RoundBuffer<double> SampleBuffer;
-	static RoundBuffer<Array<ComplexD, BufferLen/2>> SpectrumHist;
+	static RoundBuffer<Array<double, BufferLen/2>> SpectrumRawHist;
+	static RoundBuffer<Array<double, BufferLen/2>> SpectrumHist;
 	
 	static void Callback(double samples[CallbackLen]);
 	template<class T>
-	static void StageSamples(T *samples, int length);
+	static void StageSamples(T *samples, int length, int compress=1);
 
 	static void InputFromFile(std::string filename);
 	static void InputFromMic();
+	static void InputFromMath();
 };
 
 #endif

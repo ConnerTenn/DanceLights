@@ -20,12 +20,16 @@ void InputProgram()
 	std::cout << "Beginning Init Program\n";
 	InputController::InputFromFile("audio.mp3");
 	//InputController::InputFromMic();
+	//InputController::InputFromMath();
+	std::cout << "Exit Init Program\n";
 }
 
 void DanceProgram()
 {
 	std::cout << "Beginning Dance Program\n";
 	DanceController::UpdateLoop();
+	
+	std::cout << "Exit Dance Program\n";
 }
 
 int main(int argc, char **argv)
@@ -40,7 +44,7 @@ int main(int argc, char **argv)
 	std::thread inputThread(InputProgram);
 	
 	
-	while(!kbhit()) { }
+	while(!kbhit()) { usleep(1000); }
 	getch();
 	DanceController::Run = false;
 	InputController::Run = false;
