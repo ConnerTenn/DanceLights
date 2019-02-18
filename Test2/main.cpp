@@ -15,11 +15,11 @@ public:
 	static int gg;
 };
 
-void InputProgram()
+void InputProgram(char *name)
 {
 	std::cout << "Beginning Init Program\n";
-	InputController::InputFromFile("audio.mp3");
-	//InputController::InputFromMic();
+	if (name) { InputController::InputFromFile(name); }
+	else { InputController::InputFromMic(); }
 	//InputController::InputFromMath();
 	std::cout << "Exit Init Program\n";
 }
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 	
 	std::cout << "Starting threads\n";
 	std::thread danceThread(DanceProgram);
-	std::thread inputThread(InputProgram);
+	std::thread inputThread(InputProgram, argc==2?argv[1]:0);
 	
 	
 	while(!kbhit()) { usleep(1000); }

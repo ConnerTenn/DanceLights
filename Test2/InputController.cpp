@@ -11,23 +11,30 @@ RoundBuffer<Array<double, InputController::BufferLen/2>> InputController::Spectr
 
 double SoundCurve(double val)
 {
-	return pow(val,1.0/1.0)*4;
-	//return val;//pow(val,2.0);
+	//return pow(val,1.0/2.0);
+	return log10(val/0.1);//pow(val,2.0);
 }
 const int WavHeight = 150;
 const int WavScale = 2;
-void DrawWav(RoundBuffer<double> *wav, int x, int y)
+void DrawWav(RoundBuffer<double> *wav, int x, int y, double max, double avg)
 {
 	PixelTerm::OutlineRectangle(x, y, InputController::BufferLen*WavScale+2, WavHeight+2, {0xff,0xff,0xff});
 	PixelTerm::DrawLine(x+1,y+WavHeight/2,x+1+InputController::BufferLen*WavScale,y+WavHeight/2, {0x00,0x00,0xff});
 	for (int i = 0; i < InputController::BufferLen-1; i++)
 	{
+		PixelTerm::DrawLine(i*WavScale+x+1, WavHeight/2-((*wav)[i]/max)*WavHeight/2+y+1, i*WavScale+1+x+1, WavHeight/2-((*wav)[i+1]/max)*WavHeight/2+y+1, {0x00,0x4f,0x00});
 		PixelTerm::DrawLine(i*WavScale+x+1, WavHeight/2-(*wav)[i]*WavHeight/2+y+1, i*WavScale+1+x+1, WavHeight/2-(*wav)[i+1]*WavHeight/2+y+1, {0x00,0xff,0xff});
 	}
+	
+	PixelTerm::OutlineRectangle(InputController::BufferLen*WavScale+10+x, y, 10, WavHeight, {0xff,0xff,0xff});
+	PixelTerm::DrawRectangle(InputController::BufferLen*WavScale+10+x, WavHeight/2-avg*WavHeight/2+y, 10, avg*WavHeight+1, {0x00,0xff,0x00});
+	PixelTerm::DrawLine(InputController::BufferLen*WavScale+10+x, WavHeight/2-max*WavHeight/2+y, InputController::BufferLen*WavScale+10+10+x, WavHeight/2-max*WavHeight/2+y, {0xff,0xff,0x00});
+	PixelTerm::DrawLine(InputController::BufferLen*WavScale+10+x, WavHeight/2+max*WavHeight/2+y, InputController::BufferLen*WavScale+10+10+x, WavHeight/2+max*WavHeight/2+y, {0xff,0xff,0x00});
+	PixelTerm::DrawLine(InputController::BufferLen*WavScale+10+x, WavHeight/2+y, InputController::BufferLen*WavScale+10+10+x, WavHeight/2+y, {0xff,0xff,0xff});
 }
-const int DotWidth = 5;
+const int DotWidth = 4;
 const int DotHeight = 5;
-void DrawHist(RoundBuffer<Array<double, InputController::BufferLen/2>> *hist, int x, int y)
+void DrawHist(RoundBuffer<Array<double, InputController::BufferLen/2>> *hist, int x, int y, RGB map)
 {
 	PixelTerm::OutlineRectangle(x, y, DotWidth*InputController::BufferLen/2+2, DotHeight*InputController::HistLen+2, {0xff,0xff,0xff});
 	for (int i = 0; i < InputController::HistLen; i++)
@@ -38,7 +45,7 @@ void DrawHist(RoundBuffer<Array<double, InputController::BufferLen/2>> *hist, in
 			{
 				u8 val = MIN(/*SoundCurve*/(ABS((*hist)[i][j]))*255.0,255);
 				//std::cout << (ABS(Mag(SpectrumHist[i][j]))*255.0) << " ";
-				PixelTerm::DrawRectangle(j*DotWidth+1+x, i*DotHeight+1+y, DotWidth, DotHeight, {0, val, 0});
+				PixelTerm::DrawRectangle(j*DotWidth+1+x, i*DotHeight+1+y, DotWidth, DotHeight, {(u8)(val*map.R), (u8)(val*map.G), (u8)(val*map.B)});
 			}
 		}
 	}
@@ -59,45 +66,65 @@ void InputController::Callback(double samples[CallbackLen])
 	FftInplace(spectrum, BufferLen);
 	
 	Array<double, BufferLen/2> spectrum2;
+	Array<double, BufferLen/2> spectrum3;
 	for (int i = 0; i < BufferLen/2; i++) { spectrum2[i] = std::abs(spectrum[i]); }
-	SpectrumRawHist.InsertBegin(spectrum2);
 	
-	double max = 0;
-	double avg = 0;
-	/*for (int i = 0; i < HistLen; i++)
-	{
-		double maxRow = 0;
-		for (int j = 0; j < BufferLen/2; j++)
-		{
-			maxRow = MAX(maxRow, std::abs(SpectrumRawHist[i][j]));
-			//maxRow += std::abs(SpectrumRawHist[i][j]);
-		}
-		max = MAX(max, maxRow);
-		avg += maxRow;
-	}*/
+	//Dynamic Scale
+	double max = 0, avg = 0;
 	for (int i = 0; i < BufferLen; i++)
 	{
 		max = MAX(max, ABS(SampleBuffer[i]));
 		avg += ABS(SampleBuffer[i]);
 	}
-	avg = avg/(BufferLen);
-	avg = MIN(MAX(avg, 0.01), 1.0);
-	max = MAX(max, avg);
+	avg = MIN(MAX(avg/BufferLen, 0.01), 1.0);
+	for (int i = 0; i < BufferLen/2; i++) { spectrum2[i] = spectrum2[i]/avg; }
 	
-	for (int i = 0; i < BufferLen/2; i++) { spectrum2[i] = spectrum2[i]/max; }
-	SpectrumHist.InsertBegin(spectrum2);
+	SpectrumRawHist.InsertBegin(spectrum2);
+	
+	//Sharpen
+	for (int i = 0; i < BufferLen/2; i++) 
+	{
+		double avg = 0; int count = 0;
+		for (int q = -4; q <= 4; q++)
+		{
+			int w = 4+1-abs(q);
+			if (i+q >=0 && i+q < BufferLen/2 && q!=0) { avg += spectrum2[i+q]*w; count+=w; }
+		}
+		avg = avg/count;
+		spectrum3[i] = MAX(spectrum2[i] - avg, 0);
+	}
+		
+		
+	//reduce harmonics
+	for (int i = 0; i < BufferLen/2; i++) 
+	{
+		for (int j = i*2; i>=3 && j<BufferLen/2; j+=i) 
+		{
+			for (int q = -2; q<=2; q++)
+			{
+				if (j+q>=0 && j+q<BufferLen/2)
+				{
+					if (spectrum3[j+q] < spectrum3[i]) { spectrum2[j+q] = MAX(spectrum3[j+q]-spectrum3[i],0); }
+				}
+			}
+		}
+		
+		//Find Peaks
+		//spectrum2[i] = spectrum2[i] > 0.50 ? spectrum2[i] : 0;
+	}
+	
+	//for (int i = 0; i < BufferLen/2; i++) { spectrum2[i] = spectrum3[i]; }
+	
+	SpectrumHist.InsertBegin(spectrum2);//2);
 	
 	PixelTerm::ForceClear();
 	
 	{
-		DrawWav(&SampleBuffer, 0, 20);
-		DrawHist(&SpectrumRawHist, 0, WavHeight+20+20);
-		DrawHist(&SpectrumHist, 0, HistLen*DotHeight+20+WavHeight+20+20);
+		DrawWav(&SampleBuffer, 0, 20, max, avg);
+		DrawHist(&SpectrumRawHist, 0, WavHeight+20+20, {0,1,1});
+		DrawHist(&SpectrumHist, 0, 1*(HistLen*DotHeight+20)+WavHeight+20+20,{0,1,0});
 		
 		//int h = HistLen*DotHeight;
-		PixelTerm::OutlineRectangle(BufferLen*WavScale+10, 20, 10, WavHeight, {0xff,0xff,0xff});
-		PixelTerm::DrawRectangle(BufferLen*WavScale+10, WavHeight-avg*WavHeight+20, 10, WavHeight-(WavHeight-avg*WavHeight), {0x00,0xff,0x00});
-		PixelTerm::DrawLine(BufferLen*WavScale+10, WavHeight-max*WavHeight+20, BufferLen*WavScale+10+10, WavHeight-max*WavHeight+20, {0xff,0xff,0x00});
 		/*PixelTerm::OutlineRectangle(0, h*HistLen+20, 100, 100, {0xff,0xff,0xff});
 		for (int i = 0; i < 100; i++)
 		{
@@ -109,7 +136,7 @@ void InputController::Callback(double samples[CallbackLen])
 	
 	TermBuffer.Display();
 	float elapsed = (GetMilliseconds() - StartTime)/1000.00;
-	PixelTerm::DrawText(10, 10, std::to_string(elapsed), {0xff,0x4f,0x00});
+	PixelTerm::DrawText(10, 15, std::to_string(elapsed), {0xff,0x4f,0x00});
 	
 	PixelTerm::Draw();
 }
@@ -236,15 +263,27 @@ void InputController::InputFromMath()
 	
 	while(InputController::Run)
 	{
-		TermBuffer.Write("Input From Math");
+		//TermBuffer.Write("Input From Math");
 		u64 time = GetMicroseconds();
-		double sample = equation(time/500);
-		StageSamples(&sample, 1);
+		static u64 PreviousTime = time;
+		u64 delta = 0;
+		double samples[200];
 		
-		static u64 PreviousTime = GetMicroseconds();
-		u64 delta = GetMicroseconds() - PreviousTime;
-		usleep((1000*1000)/sampleRate*10-delta);
-		PreviousTime=GetMicroseconds();
+		time = GetMicroseconds();
+		delta = time - PreviousTime;
+		PreviousTime = time;
+		
+		static double t = 0;
+		for (int i = 0; i < 200; i++)
+		{
+			samples[i] = equation(t/(BufferLen));//(time/(1000.0*1000)+(200-128)*(double)(i)/(double)(delta)));
+			//samples[i] = equation(((time+1)/(1000.0*1000)));
+			t++;
+		}
+		StageSamples(samples, 200);
+		
+		
+		usleep(100*1000);
 	}
 	//StageSamples()
 }
