@@ -10,12 +10,12 @@
 
 #include <unistd.h>
 #include <vector>
-#include <list>
+//#include <list>
 #include <chrono>
-#include <cstring>
+//#include <cstring>
 //#include <thread>
 
-#include <PixelTerm.h>
+//#include <PixelTerm.h>
 
 #define MIN(a,b) ((a)<=(b)?(a):(b))
 #define MAX(a,b) ((a)>=(b)?(a):(b))
