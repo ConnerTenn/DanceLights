@@ -8,11 +8,14 @@ u_int64_t RGB::XColour()
 
 Window Win;
 Display *Disp;
+int WinWidth, WinHeight;
 
 void InitWindow()
 {
 	Disp = XOpenDisplay(NULL);
-	Win = XCreateSimpleWindow(Disp, RootWindow(Disp, 0), 1, 1, 900, 600, 0, BlackPixel(Disp, 0), BlackPixel(Disp, 0));
+	WinWidth = XWidthOfScreen(XScreenOfDisplay(Disp, 0));
+	WinHeight = XHeightOfScreen(XScreenOfDisplay(Disp, 0));
+	Win = XCreateSimpleWindow(Disp, RootWindow(Disp, 0), 1, 1, WinWidth, WinHeight, 0, BlackPixel(Disp, 0), BlackPixel(Disp, 0));
 	XSelectInput(Disp, Win, KeyPressMask | KeyReleaseMask | ClientMessage);
 	XMapWindow(Disp, Win);
 	XFlush(Disp);
@@ -76,7 +79,7 @@ void Sync()
 }
 void ForceClear()
 {
-	DrawRectangle(0,0,900,600, {0,0,0});
+	DrawRectangle(0,0,WinWidth,WinHeight, {0,0,0});
 }
 void DrawPixel(int x, int y, RGB colour)
 {

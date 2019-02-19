@@ -22,7 +22,12 @@
 #define ABS(a) ((a)<0?-(a):(a))
 #define PI M_PIl
 #define TAU (2.0*PI)
+#define MOD(a,b) ((a)%(b)+((a)<0?(b):0))
 
+typedef signed char i8;
+typedef signed short i16;
+typedef signed int i32;
+typedef signed long long i64;
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
