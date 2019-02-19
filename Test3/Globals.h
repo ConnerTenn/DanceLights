@@ -35,6 +35,13 @@ u64 GetNanoseconds();
 
 extern u64 StartTime;
 
+struct RGB
+{
+	u_int8_t R;
+	u_int8_t G;
+	u_int8_t B;
+	u_int64_t XColour();
+};
 
 template<class T, int N>
 struct Array

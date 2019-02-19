@@ -12,14 +12,6 @@
 #include <X11/keysym.h>
 
 
-struct RGB
-{
-	u_int8_t R;
-	u_int8_t G;
-	u_int8_t B;
-	u_int64_t XColour();
-};
-
 extern Window Win;
 extern Display *Disp;
 

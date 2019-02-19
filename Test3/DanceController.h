@@ -1,5 +1,6 @@
 
 #include "Globals.h"
+#include "WindowController.h"
 
 struct Style
 {
@@ -10,7 +11,18 @@ struct Style
 class DanceController
 {
 public:
-	int State[4];
+	u8 State[4];
+	u8 Beat;
+	
+	int UpdateFreq = 100;
+	u64 Delta;
+	
+	RoundBuffer<Array<u8,5>> StateHist;
+	
+	DanceController();
+	
+	void Update();
+	void Draw(int xOff, int yOff);
 	
 };
 
