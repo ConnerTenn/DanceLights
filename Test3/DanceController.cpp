@@ -35,7 +35,8 @@ void Cycle::Pulse(u64 t)
 		{
 			Frequency = ((t-LastPulse) + Frequency)/2;
 		}
-		Offset = (2*MOD(t, Frequency)+Offset)/3;
+		//Offset = (2*MOD(t, Frequency)+Offset)/3;
+		Offset = MOD(t-Offset-Frequency/2,Frequency)+Offset-Frequency/2;
 	}
 	std::cout << "  Off: " << Offset << "  Freq: " << Frequency << "\n";
 	LastPulse = t;
@@ -103,18 +104,21 @@ void DanceController::Draw(int xOff, int yOff)
 	//Draw StateIn Hist
 	for (int i = 0; i < StateHist.Size(); i++)
 	{
+		//Calculated Beat Cycle
 		if (Beat(Now - (i*1000/UpdateFreq+1000/UpdateFreq/2), UpdateCycle.Frequency))
 		{
-			DrawRectangle(xOff, i*10+yOff+35, 20+40, 10, RGB{255,0,0});
+			DrawRectangle(xOff, i*10+yOff+35, 20+40+20, 10, RGB{255,0,0});
 		}
 		
-		OutlineRectangle(xOff+20, 10*i+yOff+35, 40, 10, RGB{255,255,255});
+		//State Hist
+		OutlineRectangle(xOff+20+10, 10*i+yOff+35, 40, 10, RGB{255,255,255});
 		for (int j = 0; j < 4; j++)
 		{
-			if (StateHist[i][j]==1) { DrawRectangle(10*j+xOff+20, 10*i+yOff+35, 10, 10, RGB{255,255,255}); }
+			if (StateHist[i][j]==1) { DrawRectangle(10*j+xOff+20+10, 10*i+yOff+35, 10, 10, RGB{255,255,255}); }
 		}
 		
-		OutlineRectangle(xOff, 10*i+yOff+35, 20, 10, RGB{255,255,255});
-		if(StateHist[i][4]) { DrawRectangle(xOff, 10*i+yOff+35, 20, 10, RGB{255,255,255}); }
+		//Beat Hist
+		OutlineRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255});
+		if(StateHist[i][4]) { DrawRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255}); }
 	}
 }
