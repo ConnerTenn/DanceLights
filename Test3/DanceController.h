@@ -1,10 +1,13 @@
 
+#ifndef _DANCE_CONTROLLER_H_
+#define _DANCE_CONTROLLER_H_
+
 #include "Globals.h"
 #include "WindowController.h"
 
 struct Style
 {
-	//Fade, hold, streak, 
+	//Fade, hold, streak, pulse
 	int Speed;
 };
 
@@ -15,8 +18,12 @@ struct Cycle
 	
 	bool SymmetricError = true;
 	bool OncePerCycle = false;
+	bool ActOnPulseOn = false;
 	
-	u64 OnTime = 0, LastPulse = 0;
+	Cycle(int len=1);
+	
+	u64 OnTime = 0, LastAccept = 0;
+	RoundBuffer<u64> PulseHist;
 	bool PulseState = false;
 	void PulseOn(u64 time);
 	void PulseOff(u64 time);
@@ -33,7 +40,7 @@ public:
 	u8 BeatIn;
 	
 	int UpdateFreq = 50;
-	u64 Start, Now, Last, Delta;
+	u64 Start, Now;//, Last, Delta;
 	
 	Cycle UpdateCycle, Beat;
 	
@@ -46,3 +53,4 @@ public:
 	
 };
 
+#endif

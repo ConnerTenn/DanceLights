@@ -5,9 +5,10 @@
 class LightStrip
 {
 public:
-	int Length;
 	
-	std::vector<RGB> Lights;
+	DynamicArray<RGB> Lights;
+	
+	LightStrip(int length);
 	
 	void Draw(int X, int Y, int Direction);
 

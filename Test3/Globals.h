@@ -62,6 +62,21 @@ struct Array
 };
 
 template<class T>
+struct DynamicArray
+{
+	T *Values;
+	int Length;
+	
+	DynamicArray(int len);
+	DynamicArray(std::initializer_list<T> list);
+	DynamicArray(DynamicArray<T> &other);
+	~DynamicArray();
+	int Size();
+	T &operator[](int i);
+	void Copy(DynamicArray<T> &other);
+};
+
+template<class T>
 class RoundBuffer
 {
 private:
@@ -119,6 +134,46 @@ void Array<T,N>::Copy(Array<T, N> &other)
 }
 
 
+
+
+template<class T>
+DynamicArray<T>::DynamicArray(int Len) 
+{
+	Values = new T[Len];
+}
+
+template<class T>
+DynamicArray<T>::DynamicArray(std::initializer_list<T> list)
+{
+	DynamicArray(list.size());
+	for (int i = 0; i < (int)list.size(); i++) { Values[i] = list.begin()[i]; }
+}
+
+template<class T>
+DynamicArray<T>::DynamicArray(DynamicArray<T> &other)
+{
+	DynamicArray(other.Size());
+	for (int i = 0; i < Length; i++) { Values[i] = other[i]; }
+}
+
+template<class T>
+DynamicArray<T>::~DynamicArray()
+{
+	delete[] Values;
+}
+
+template<class T>
+int DynamicArray<T>::Size() { return Length; }
+
+template<class T>
+T &DynamicArray<T>::operator[](int i) { return Values[i]; }
+
+template<class T>
+void DynamicArray<T>::Copy(DynamicArray<T> &other)
+{
+	DynamicArray(other.Size());
+	for (int i = 0; i < Length; i++) { Values[i] = other[i]; }
+}
 
 
 

@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "WindowController.h"
 #include "DanceController.h"
+#include "LightStrip.h"
 
 u64 StartTime = GetMilliseconds();
 //TerminalBuffer TermBuffer(10, 900, 30);
@@ -53,12 +54,15 @@ int main()
 		DrawText(10, 10, "Runtime:" + std::to_string((lastTime-StartTime)/1000.0) + "  Frametime:" + std::to_string((GetMilliseconds() - lastTime)/1000.0), {255,255,255});
 		lastTime = GetMilliseconds();
 		
+		LightStrip strip(10);
+		strip.Draw(150, 150, 0);
+		
 		
 		Sync();
 		
 		//u64 nextTime = GetMilliseconds();
 		//usleep((100-(GetMilliseconds()-lastTime))*1000);
-		usleep(100);
+		usleep(1000);
 	}
 	
 	
