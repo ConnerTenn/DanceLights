@@ -16,7 +16,7 @@ struct Cycle
 	u64 Frequency = 0;
 	u64 Offset = 0;
 	
-	bool SymmetricError = true;
+	//bool SymmetricError = true;
 	bool OncePerCycle = false;
 	bool ActOnPulseOn = false;
 	
@@ -30,7 +30,7 @@ struct Cycle
 	void Pulse(u64 time);
 	
 	bool Triggered = false;
-	bool operator()(u64 time, u64 error = 2);
+	bool operator()(u64 time, u64 error = 2, bool symmetricError = false);
 };
 
 class DanceController

@@ -72,10 +72,10 @@ void Cycle::Pulse(u64 t)
 	//std::cout << "Off: " << Offset << "  Freq: " << Frequency << "\n";
 }
 
-bool Cycle::operator()(u64 t, u64 error)
+bool Cycle::operator()(u64 t, u64 error, bool symmetricError)
 {
 	if (Frequency == 0) { return false; }
-	if (MOD((i64)(t-Offset+error/2*(u8)SymmetricError),(i64)Frequency) < (i64)error)
+	if (MOD((i64)(t-Offset+error/2*(u8)symmetricError),(i64)Frequency) < (i64)error)
 	{
 		if (!Triggered || !OncePerCycle)
 		{
@@ -98,7 +98,8 @@ DanceController::DanceController() :
 	Start = GetMilliseconds();
 	UpdateCycle.Frequency = 1000/UpdateFreq;
 	UpdateCycle.Offset = StartTime;
-	UpdateCycle.SymmetricError = false; UpdateCycle.OncePerCycle = true;
+	//UpdateCycle.SymmetricError = false; 
+	UpdateCycle.OncePerCycle = true;
 	//Beat.Frequency = 500;
 	//Beat.Offset = StartTime;
 	Beat.ActOnPulseOn = true;
@@ -137,7 +138,7 @@ void DanceController::Draw(int xOff, int yOff)
 	for (int i = 0; i < StateHist.Size(); i++)
 	{
 		//Calculated Beat Cycle
-		if (Beat(Now - (i*1000/UpdateFreq+1000/UpdateFreq/2), UpdateCycle.Frequency))
+		if (Beat(Now - i*UpdateCycle.Frequency, UpdateCycle.Frequency))
 		{
 			DrawRectangle(xOff, i*10+yOff+35, 20+40+20, 10, RGB{255,0,0});
 		}
