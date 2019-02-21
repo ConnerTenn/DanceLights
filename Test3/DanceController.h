@@ -7,7 +7,7 @@
 
 struct Style
 {
-	//Fade, hold, streak, pulse
+	//slide poly mash flip hold pulse, Fade, streak
 	int Speed;
 };
 

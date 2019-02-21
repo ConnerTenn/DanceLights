@@ -48,6 +48,8 @@ struct RGB
 	u_int64_t XColour();
 };
 
+RGB ColourVal(double val);
+
 template<class T, int N>
 struct Array
 {
@@ -62,11 +64,13 @@ struct Array
 };
 
 template<class T>
-struct DynamicArray
+class DynamicArray
 {
+public:
 	T *Values;
 	int Length;
 	
+public:
 	DynamicArray(int len);
 	DynamicArray(std::initializer_list<T> list);
 	DynamicArray(DynamicArray<T> &other);
@@ -137,9 +141,10 @@ void Array<T,N>::Copy(Array<T, N> &other)
 
 
 template<class T>
-DynamicArray<T>::DynamicArray(int Len) 
+DynamicArray<T>::DynamicArray(int len) :
+	Length(len)
 {
-	Values = new T[Len];
+	Values = new T[len];
 }
 
 template<class T>

@@ -12,9 +12,12 @@ DanceController Dance;
 int main()
 {
 	InitWindow();
+	srand(StartTime);
 	
 	//u64 startTime = GetMilliseconds();
 	u64 lastTime = StartTime;
+	
+	LightStrip strip(50);
 	
 	bool run = true;
 	while (run)
@@ -54,7 +57,23 @@ int main()
 		DrawText(10, 10, "Runtime:" + std::to_string((lastTime-StartTime)/1000.0) + "  Frametime:" + std::to_string((GetMilliseconds() - lastTime)/1000.0), {255,255,255});
 		lastTime = GetMilliseconds();
 		
-		LightStrip strip(10);
+		
+		static bool latch = false;
+		if (Dance.Beat(lastTime, Dance.Beat.Frequency/2))
+		{
+			static double val = 0;
+			for (int i = 0; i < strip.Lights.Size() && !latch; i++)
+			{
+				//RGB rgb{(u8)rand(), (u8)rand(), (u8)rand()};
+				strip.Lights[i] = ColourVal(fmod(val+i/50.0,1.0));
+				
+				val += 0.05/strip.Lights.Size();
+			}
+			//std::cout << "ADDR:"<<strip.Lights.Values<<"\n";
+			latch = true;
+		}
+		else { latch = false; }
+		
 		strip.Draw(150, 150, 0);
 		
 		

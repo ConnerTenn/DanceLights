@@ -36,18 +36,11 @@ void Cycle::Pulse(u64 t)
 	}
 	else 
 	{
-		/*if (t-LastPulse < Frequency*5)
-		{
-			//frequency is based off of the overage of the current frequency and the timing of the last pulse
-			Frequency = ((t-LastPulse) + Frequency)/2;
-		}
-		//Calculates the new offset based on how far off the new pulse was
-		Offset = MOD(t-Offset-Frequency/2,Frequency)+Offset-Frequency/2;*/
-		//u64 oldFreq = Frequency;
-		u64 newFreq = 0; u16 count = 0;
+		u16 count = 0;
+		u64 newFreq = 0; count = 0;
 		for (int i = 0; i < PulseHist.Size()-1; i++)
 		{
-			if (PulseHist[i]-PulseHist[i+1]<Frequency*3 || t-LastAccept>=2000)
+			if (PulseHist[i]-PulseHist[i+1]<MAX(1000,Frequency*5))// || t-LastAccept>=2000)
 			{
 				//frequency is based off of the overage of the current frequency and the timing of the last pulse
 				newFreq += ((PulseHist[i]-PulseHist[i+1]) + Frequency)/2;
@@ -65,6 +58,7 @@ void Cycle::Pulse(u64 t)
 			u64 q = (PulseHist[0]-Offset-Frequency/2)/Frequency+1;
 			if (i==0 || PulseHist[i]-PulseHist[i+1]<Frequency*2)
 			{
+				//Calculates the new offset based on how far off the new pulse was
 				//newOff += MOD(PulseHist[i]-Offset-Frequency/2,Frequency)+Offset-Frequency/2;
 				newOff += (PulseHist[i]-Offset-Frequency/2)+Offset-Frequency/2-q*Frequency-i*Frequency;
 				count++;
@@ -73,10 +67,9 @@ void Cycle::Pulse(u64 t)
 			//std::cout << "    Diff: " << (i64)((i64)PulseHist[i]-(i64)PulseHist[i+1]) << "    DiffDiff: " << ABS(((i64)PulseHist[i]-(i64)PulseHist[i+1])-(i64)Frequency) << "\n";
 		}
 		Offset = newOff / count;
-		std::cout << "Count: " << count << "\n";
+		//std::cout << "Count: " << count << "\n";
 	}
-	std::cout << "Off: " << Offset << "  Freq: " << Frequency << "\n";
-	//LastPulse = t;
+	//std::cout << "Off: " << Offset << "  Freq: " << Frequency << "\n";
 }
 
 bool Cycle::operator()(u64 t, u64 error)
@@ -160,4 +153,6 @@ void DanceController::Draw(int xOff, int yOff)
 		OutlineRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255});
 		if(StateHist[i][4]) { DrawRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255}); }
 	}
+	
+	DrawText(xOff+10, StateHist.Size()*10+20+yOff+35, "Beat Freq:" + std::to_string(Beat.Frequency), {255,255,255});
 }
