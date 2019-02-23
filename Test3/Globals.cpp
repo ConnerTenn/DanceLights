@@ -21,3 +21,8 @@ RGB ColourVal(double val)
 		(u8)(255.0*((0.0 <= val && val < 1.0/3.0 ? (3.0*val) : 0)			+ (1.0/3.0 < val && val <= 2.0/3.0 ? (2.0-3.0*val) : 0))),
 		(u8)(255.0*((1.0/3.0 <= val && val < 2.0/3.0 ? (3.0*val-1.0) : 0)	+ (2.0/3.0 < val && val <= 1.0 ? (3.0-3.0*val) : 0)))};
 }
+
+RGB ColourScale(RGB rgb, double scale)
+{
+	return RGB{ (u8)(scale*rgb.R), (u8)(scale*rgb.G), (u8)(scale*rgb.B) };
+}

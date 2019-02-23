@@ -31,8 +31,8 @@ void Cycle::Pulse(u64 t)
 	PulseHist.InsertBegin(t);
 	if (Frequency == 0)
 	{
-		if (Offset == 0) { Offset = t; }
-		Frequency = t - Offset;
+		if (Align == 0) { Align = t; }
+		Frequency = t - Align;
 	}
 	else 
 	{
@@ -55,27 +55,27 @@ void Cycle::Pulse(u64 t)
 		for (int i = 0; i < PulseHist.Size()-1; i++)
 		{
 			//if (PulseHist[i-1]-PulseHist[i]<Frequency*3)
-			u64 q = (PulseHist[0]-Offset-Frequency/2)/Frequency+1;
+			u64 q = (PulseHist[0]-Align-Frequency/2)/Frequency+1;
 			if (i==0 || PulseHist[i]-PulseHist[i+1]<Frequency*2)
 			{
-				//Calculates the new offset based on how far off the new pulse was
-				//newOff += MOD(PulseHist[i]-Offset-Frequency/2,Frequency)+Offset-Frequency/2;
-				newOff += (PulseHist[i]-Offset-Frequency/2)+Offset-Frequency/2-q*Frequency-i*Frequency;
+				//Calculates the new align based on how far off the new pulse was
+				//newOff += MOD(PulseHist[i]-Align-Frequency/2,Frequency)+Align-Frequency/2;
+				newOff += (PulseHist[i]-Align-Frequency/2)+Align-Frequency/2-q*Frequency-i*Frequency;
 				count++;
 			}
 			else { i=PulseHist.Size(); }
 			//std::cout << "    Diff: " << (i64)((i64)PulseHist[i]-(i64)PulseHist[i+1]) << "    DiffDiff: " << ABS(((i64)PulseHist[i]-(i64)PulseHist[i+1])-(i64)Frequency) << "\n";
 		}
-		Offset = newOff / count;
+		Align = newOff / count;
 		//std::cout << "Count: " << count << "\n";
 	}
-	//std::cout << "Off: " << Offset << "  Freq: " << Frequency << "\n";
+	//std::cout << "Off: " << Align << "  Freq: " << Frequency << "\n";
 }
 
 bool Cycle::operator()(u64 t, u64 error, bool symmetricError)
 {
 	if (Frequency == 0) { return false; }
-	if (MOD((i64)(t-Offset+error/2*(u8)symmetricError),(i64)Frequency) < (i64)error)
+	if (MOD((i64)(t-Align+error/2*(u8)symmetricError),(i64)Frequency) < (i64)error)
 	{
 		if (!Triggered || !OncePerCycle)
 		{
@@ -97,11 +97,11 @@ DanceController::DanceController() :
 {
 	Start = GetMilliseconds();
 	UpdateCycle.Frequency = 1000/UpdateFreq;
-	UpdateCycle.Offset = StartTime;
+	UpdateCycle.Align = StartTime;
 	//UpdateCycle.SymmetricError = false; 
 	UpdateCycle.OncePerCycle = true;
 	//Beat.Frequency = 500;
-	//Beat.Offset = StartTime;
+	//Beat.Align = StartTime;
 	Beat.ActOnPulseOn = true;
 	
 	//Last=Start;

@@ -7,14 +7,25 @@
 
 struct Style
 {
-	//slide poly mash flip hold pulse, Fade, streak
-	int Speed;
+	//slide poly mash flip;    hold pulse, Fade, streak
+	bool Hold;
+	u8 Pulse; //Pulse can be controlled by streak
+	u8 Streak;
+	u8 Fade;
+	
+	u64 Speed; //used for streak
+	u64 Frequency;
+	u64 Offset;
+	u64 Align;
+	double Amplitude;
+	
+	double Colour;
 };
 
 struct Cycle
 {
 	u64 Frequency = 0;
-	u64 Offset = 0;
+	u64 Align = 0;
 	
 	//bool SymmetricError = true;
 	bool OncePerCycle = false;

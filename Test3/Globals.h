@@ -49,6 +49,7 @@ struct RGB
 };
 
 RGB ColourVal(double val);
+RGB ColourScale(RGB rgb, double scale);
 
 template<class T, int N>
 struct Array
