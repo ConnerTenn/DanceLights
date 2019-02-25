@@ -31,3 +31,4 @@ void OutlineRectangle(int x, int y, int w, int h, RGB colour);
 void DrawLine(int x1, int y1, int x2, int y2, RGB colour);
 void DrawText(int x, int y, std::string text, RGB colour);
 
+void Graph(int xOff, int yOff, double xB, double xE, double xS, double yS, double (*f)(double), RGB colour);

@@ -48,6 +48,10 @@ struct RGB
 	u_int64_t XColour();
 };
 
+double OppCos(double x);
+double RedVal(double val);
+double GreenVal(double val);
+double BlueVal(double val);
 RGB ColourVal(double val);
 RGB ColourScale(RGB rgb, double scale);
 

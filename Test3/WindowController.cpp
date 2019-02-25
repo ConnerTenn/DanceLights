@@ -147,3 +147,13 @@ void DrawText(int x, int y, std::string text, RGB colour)
 	XDrawString(Disp, Win, gc, x, y, text.c_str(), text.length());
 	XFreeGC(Disp, gc);
 }
+
+void Graph(int xOff, int yOff, double xB, double xE, double xS, double yS, double (*f)(double), RGB colour)
+{
+	int max = (xE-xB)*xS;
+	DrawLine(xOff,yOff,xOff+max,yOff, {255,255,255});
+	for (int i = 0; i <= max; i++)
+	{
+		DrawPixel(xOff+i, yOff-yS*f(xB+i/xS), colour);
+	}
+}
