@@ -64,7 +64,6 @@ int main()
 		lastTime = GetMilliseconds();
 		
 		
-		
 		Sync();
 		
 		//u64 nextTime = GetMilliseconds();

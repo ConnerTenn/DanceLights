@@ -1,6 +1,24 @@
 
 #include "DanceController.h"
 
+double Bistable(double x)
+{
+	return x > 1 ? 1 : (x < 0 ? 0 : (sin(PI*(x-0.5))+1.0)/2.0);
+}
+
+double ASD(double x, double a, double s, double d)
+{
+	//x = fmod(x, f);
+	//return h*pow(M_E, -pow(a*sin(PI*x/f),2));
+	return (a==0 ? (x>=0?1:0) : Bistable(x/a)) * (d==0 ? (x<=s+a && x>0 ? 1 : 0) : 1 - Bistable((x-a-s)/d));
+}
+
+double ASDR(double x, double a, double s, double d, double r, double f)
+{
+	double t = a+s+d+r;
+	return ASD(fmod(f*x,1),a/t,s/t,d/t);
+}
+
 Cycle::Cycle(int len) : 
 		PulseHist(len+1)
 {
@@ -72,14 +90,14 @@ void Cycle::Pulse(u64 t)
 	//std::cout << "Off: " << Align << "  Freq: " << Frequency << "\n";
 }
 
-bool Cycle::operator()(u64 t, u64 error, bool symmetricError)
+bool Cycle::operator()(u64 t, u64 error, bool symmetricError, bool *latch)
 {
 	if (Period == 0) { return false; }
 	if (MOD((i64)(t-Align+error/2*(u8)symmetricError),(i64)Period) < (i64)error)
 	{
-		if (!Triggered || !OncePerCycle)
+		if (!latch || !*latch)
 		{
-			Triggered = true;
+			if (latch) { *latch = true; }
 			return true;
 		}
 		else 
@@ -87,7 +105,7 @@ bool Cycle::operator()(u64 t, u64 error, bool symmetricError)
 			return false;
 		}
 	}
-	Triggered = false;
+	if (latch) { *latch = false; }
 	return false;
 }
 
@@ -98,16 +116,14 @@ DanceController::DanceController() :
 	Start = GetMilliseconds();
 	UpdateCycle.Period = 1000.0/UpdateFreq;
 	UpdateCycle.Align = StartTime;
-	//UpdateCycle.SymmetricError = false; 
-	UpdateCycle.OncePerCycle = true;
 	//Beat.Period = 500;
 	//Beat.Align = StartTime;
 	Beat.ActOnPulseOn = true;
 	
 	
-	LightStripList.push_back(LightStrip(50));
-	LightStripList.push_back(LightStrip(50));
-	LightStripList.push_back(LightStrip(50));
+	LightStripList.push_back(LightStrip(70));
+	LightStripList.push_back(LightStrip(70));
+	LightStripList.push_back(LightStrip(70));
 	//Last=Start;
 }
 
@@ -117,7 +133,8 @@ void DanceController::Update()
 	
 	//Delta = Now - Last;
 	//if (Delta > (u64)(1000/UpdateFreq))
-	if (UpdateCycle(Now, UpdateCycle.Period/4))
+	static bool updateLatch = false;
+	if (UpdateCycle(Now, UpdateCycle.Period/4, false, &updateLatch))
 	{
 		//u8 temp[5] = {StateIn[0],StateIn[1],StateIn[2],StateIn[3],BeatIn};
 		StateHist.InsertBegin({StateIn[0],StateIn[1],StateIn[2],StateIn[3],BeatIn});
@@ -126,37 +143,41 @@ void DanceController::Update()
 	if (StateHist[0][4]) { Beat.PulseOn(Now); }
 	else { Beat.PulseOff(Now); }
 	
-	static bool latch = false;
-	if (Beat(Now, UpdateCycle.Period/4))
+	static bool beatLatch = false;
+	if (Beat(Now, UpdateCycle.Period/4, false, &beatLatch))
 	{
-		if (!latch)
+		Streak streak;
+		streak.Attack = 50.0;
+		streak.Decay = 50.0;
+		streak.Sustain = 0.0;
+		streak.Offset = Now;
+		static bool flip = false;
+		streak.Speed = 200.0/70;
+		if (flip)
 		{
-			Streak streak;
-			streak.Attack = 5.0;
-			streak.Sustain = 0.0;
-			streak.Offset = Now;
-			streak.Speed = 500;
-			StreakList.push_back(streak);
+			streak.Attack = 10;
+			streak.Decay = 200;
+			streak.Sustain = 0;
+			streak.Speed = 0;
+			//StreakList.push_back(streak);
 		}
-		latch = true;
-	}
-	else
-	{
-		latch = false;
+		StreakList.push_back(streak);
+		flip = !flip;
 	}
 	
 	int length = 0;
 	u64 delay = 0;
-	for (int i = 0; i < (int)LightStripList.size(); i++)
+	for (u64 i = 0; i < LightStripList.size(); i++)
 	{
-		LightStripList[i].Update(Now - i*100, &StreakList);
+		LightStripList[i].Update(Now - delay, &StreakList);
 		length = MAX(length, LightStripList[i].Length);
-		delay += 100;
+		//delay += 500;
 	}
+	//delay-=500;
 	
-	for (int i = 0; i < (int)StreakList.size();)
+	for (u64 i = 0; i < StreakList.size();)
 	{
-		if (Now - StreakList[i].Offset > StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
+		if (Now - StreakList[i].Offset > 5000)//StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
 		{
 			StreakList.erase(StreakList.begin()+i);
 		}
@@ -203,8 +224,8 @@ void DanceController::Draw(int xOff, int yOff)
 	{
 		for (int j = 0; j < LightStripList[i].Length; j++)
 		{
-			DrawRectangle(xOff + 200 + j*20, yOff + 100 + i*25, 20, 20, LightStripList[i].Lights[j]);
+			DrawRectangle(xOff + 200 + j*20, yOff + 100 + i*40, 20, 20, LightStripList[i].Lights[j]);
 		}
-		OutlineRectangle(xOff + 200, yOff + 100 + i*25, 20*LightStripList[i].Length, 20, {255,255,255});
+		OutlineRectangle(xOff + 200, yOff + 100 + i*40, 20*LightStripList[i].Length, 20, {255,255,255});
 	}
 }

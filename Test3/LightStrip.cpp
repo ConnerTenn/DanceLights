@@ -19,24 +19,6 @@ LightStrip::LightStrip(const LightStrip &other) :
 	}
 }
 
-double Bistable(double x)
-{
-	return x > 1 ? 1 : (x < 0 ? 0 : (sin(PI*(x-0.5))+1.0)/2.0);
-}
-
-double SingleBeat(double x, double a, double s, double d)
-{
-	//x = fmod(x, f);
-	//return h*pow(M_E, -pow(a*sin(PI*x/f),2));
-	return (a==0 ? 0 : Bistable(x/a)) * (d==0 ? 1 : 1 - Bistable((x-a-s)/d));
-}
-
-double BeatCycle(double x, double a, double s, double d, double r, double f)
-{
-	double t = a+s+d+r;
-	return SingleBeat(fmod(f*x,1),a/t,s/t,d/t);
-}
-
 void LightStrip::Update(u64 now, std::vector<Streak> *streakList)
 {
 	//u64 now = GetMilliseconds();
@@ -70,7 +52,8 @@ void LightStrip::Update(u64 now, std::vector<Streak> *streakList)
 			for (int j = 0; j < (int)streakList->size(); j++)
 			{
 				Streak *streak = &(*streakList)[j];
-				double temp = SingleBeat((now-streak->Offset-i*(streak->Speed/Length)), streak->Attack*(streak->Speed/Length), streak->Sustain*(streak->Speed/Length), streak->Attack*(streak->Speed/Length));
+				//double temp = SingleBeat((now-streak->Offset-i*(streak->Speed/Length)), streak->Attack*(streak->Speed/Length), streak->Sustain*(streak->Speed/Length), streak->Attack*(streak->Speed/Length));
+				double temp = ASD((double)(now-streak->Offset)-i*streak->Speed, streak->Attack, streak->Sustain, streak->Decay);
 				scale = MAX(scale, temp);
 			}
 		

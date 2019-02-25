@@ -10,6 +10,9 @@ class DanceController;
 #include "WindowController.h"
 #include "LightStrip.h"
 
+double ASD(double x, double a, double s, double d);
+double ASDR(double x, double a, double s, double d, double r, double f);
+
 struct Style
 {
 	//slide poly mash flip;    hold pulse, Fade, streak
@@ -43,7 +46,7 @@ struct Cycle
 	u64 Align = 0;
 	
 	//bool SymmetricError = true;
-	bool OncePerCycle = false;
+	//bool OncePerCycle = false;
 	bool ActOnPulseOn = false;
 	
 	Cycle(int len=1);
@@ -55,16 +58,17 @@ struct Cycle
 	void PulseOff(u64 time);
 	void Pulse(u64 time);
 	
-	bool Triggered = false;
-	bool operator()(u64 time, u64 error = 2, bool symmetricError = false);
+	//bool Triggered = false;
+	bool operator()(u64 time, u64 error = 2, bool symmetricError = false, bool *latch = 0);
 };
 
 struct Streak
 {
 	double Attack;
+	double Decay;
 	double Sustain;
 	u64 Offset;
-	u64 Speed;
+	double Speed;
 };
 
 class DanceController
