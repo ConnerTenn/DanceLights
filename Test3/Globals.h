@@ -48,12 +48,20 @@ struct RGB
 	u_int64_t XColour();
 };
 
+#define RED (0.0)
+#define YELLOW (1.0/6.0)
+#define GREEN (2.0/6.0)
+#define CYAN (3.0/6.0)
+#define BLUE (4.0/6.0)
+#define MAGENTA (5.0/6.0)
+
 double OppCos(double x);
 double RedVal(double val);
 double GreenVal(double val);
 double BlueVal(double val);
 RGB ColourVal(double val);
 RGB ColourScale(RGB rgb, double scale);
+double mmod(double a, double m);
 
 template<class T, int N>
 struct Array

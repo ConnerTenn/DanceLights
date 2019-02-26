@@ -19,6 +19,22 @@ double ASDR(double x, double a, double s, double d, double r, double f)
 	return ASD(fmod(f*x,1),a/t,s/t,d/t);
 }
 
+double RoundMean(double a, double b, double m, double w)
+{
+	//return fmod((a+b+(abs(a-b)>m/2.0?m:0))/2.0, m);
+	return fmod((a + (abs(a-b)>m/2.0?1.0:0.0))*w + b*(1.0-w),m);
+}
+
+RGB ColourMix(RGB a, RGB b, double w)
+{
+	return {(u8)(a.R*w + b.R*(1.0-w)), (u8)(a.G*w + b.G*(1.0-w)), (u8)(a.B*w + b.B*(1.0-w))};
+}
+
+i8 RoundDirection(double a, double b, double m)
+{
+	return a==b? 0 : (mmod(b-a,m)<mmod(a-b,m) ? 1 : -1);
+}
+
 Cycle::Cycle(int len) : 
 		PulseHist(len+1)
 {
@@ -109,6 +125,14 @@ bool Cycle::operator()(u64 t, u64 error, bool symmetricError, bool *latch)
 	return false;
 }
 
+void Fade::Update(u64 now)
+{
+	static u64 lastTime = now;
+	double step = (double)(now-lastTime)/Speed;
+	Colour = Colour +  MIN(step, abs(Target-Colour)) * RoundDirection(Colour, Target, 1.0);
+	Colour = mmod(Colour, 1.0);
+	lastTime = now;
+}
 
 DanceController::DanceController() : 
 		UpdateCycle(), Beat(4), StateHist(120)
@@ -116,9 +140,10 @@ DanceController::DanceController() :
 	Start = GetMilliseconds();
 	UpdateCycle.Period = 1000.0/UpdateFreq;
 	UpdateCycle.Align = StartTime;
-	//Beat.Period = 500;
 	//Beat.Align = StartTime;
 	Beat.ActOnPulseOn = true;
+	
+	ColourFade.Speed = 1500;
 	
 	
 	LightStripList.push_back(LightStrip(70));
@@ -143,6 +168,11 @@ void DanceController::Update()
 	if (StateHist[0][4]) { Beat.PulseOn(Now); }
 	else { Beat.PulseOff(Now); }
 	
+	if (HalfTime) { MulBeat.Period = Beat.Period*2; }
+	else if (DoubleTime) { MulBeat.Period = Beat.Period/2; }
+	else { MulBeat.Period = 0; }
+	MulBeat.Align = Beat.Align;
+	
 	static bool beatLatch = false;
 	if (Beat(Now, UpdateCycle.Period/4, false, &beatLatch))
 	{
@@ -150,26 +180,31 @@ void DanceController::Update()
 		streak.Attack = 50.0;
 		streak.Decay = 50.0;
 		streak.Sustain = 0.0;
-		streak.Offset = Now;
+		streak.Align = Now;
 		static bool flip = false;
-		streak.Speed = 200.0/70;
+		streak.Speed = (Beat.Period/2)/70;
+		streak.Colour = PrimaryColour;
 		if (flip)
 		{
-			streak.Attack = 10;
-			streak.Decay = 200;
+			streak.Attack = 0;//(1*Beat.Period)/3;
+			streak.Decay = (1*Beat.Period)/3;
 			streak.Sustain = 0;
 			streak.Speed = 0;
+			streak.Colour = RED;
 			//StreakList.push_back(streak);
 		}
 		StreakList.push_back(streak);
-		flip = !flip;
+		
+		PrimaryColour = mmod(PrimaryColour + (rand()%3)/6.0+2.0/6.0, 1.0);//(rand()%1000)/1000.0;
+		ColourFade.Target = mmod(ColourFade.Colour + (rand()%3)/6.0+2.0/6.0, 1.0);
+		//flip = !flip;
 	}
 	
 	int length = 0;
 	u64 delay = 0;
 	for (u64 i = 0; i < LightStripList.size(); i++)
 	{
-		LightStripList[i].Update(Now - delay, &StreakList);
+		LightStripList[i].Update(Now - delay, &StreakList, &ColourFade);
 		length = MAX(length, LightStripList[i].Length);
 		//delay += 500;
 	}
@@ -177,12 +212,13 @@ void DanceController::Update()
 	
 	for (u64 i = 0; i < StreakList.size();)
 	{
-		if (Now - StreakList[i].Offset > 5000)//StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
+		if ((i64)Now - (i64)StreakList[i].Align > 5000)//StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
 		{
 			StreakList.erase(StreakList.begin()+i);
 		}
 		else { i++; }
 	}
+	ColourFade.Update(Now);
 }
 
 void DanceController::Draw(int xOff, int yOff)
@@ -204,6 +240,10 @@ void DanceController::Draw(int xOff, int yOff)
 		{
 			DrawRectangle(xOff, i*10+yOff+35, 20+40+20, 10, RGB{255,0,0});
 		}
+		if (MulBeat(Now - i*UpdateCycle.Period, UpdateCycle.Period))
+		{
+			DrawRectangle(xOff, i*10+yOff+35+5/2, 20+40+20, 5, RGB{0,0,255});
+		}
 		
 		//State Hist
 		OutlineRectangle(xOff+20+10, 10*i+yOff+35, 40, 10, RGB{255,255,255});
@@ -217,7 +257,8 @@ void DanceController::Draw(int xOff, int yOff)
 		if(StateHist[i][4]) { DrawRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255}); }
 	}
 	
-	DrawText(xOff+10, StateHist.Size()*10+20+yOff+35, "Beat Period:" + std::to_string(Beat.Period), {255,255,255});
+	DrawText(xOff+10, StateHist.Size()*10+20+yOff+35, "Beat Period:" + std::to_string(Beat.Period) + "   Beat Align:" + std::to_string(Beat.Align), {255,255,255});
+	DrawText(xOff+10, StateHist.Size()*10+20+yOff+55, "MulBeat Period:" + std::to_string(MulBeat.Period) + "   MulBeat Align:" + std::to_string(MulBeat.Align), {255,255,255});
 	DrawText(xOff+200, yOff+80, "Streak Count:" + std::to_string(StreakList.size()), {255,255,255});
 	
 	for (int i = 0; i < (int)LightStripList.size(); i++)
@@ -228,4 +269,18 @@ void DanceController::Draw(int xOff, int yOff)
 		}
 		OutlineRectangle(xOff + 200, yOff + 100 + i*40, 20*LightStripList[i].Length, 20, {255,255,255});
 	}
+	
+	/*
+	{
+		int x = xOff + 2000, y = yOff + 200;
+		for (int i = 0; i < 500; i++)
+		{
+			//DrawPixel(50.0*sin(TAU*i/500.0)+x, 50.0*cos(TAU*i/500.0)+y, ColourVal(i/500.0));
+			DrawLine(x,y,50.0*sin(TAU*i/500.0)+x, -50.0*cos(TAU*i/500.0)+y,ColourVal(i/500.0));
+		}
+		DrawLine(x,y,60.0*sin(TAU*ColourFade.Colour)+x, -60.0*cos(TAU*ColourFade.Colour)+y,{255,255,255});
+		DrawLine(x,y,60.0*sin(TAU*ColourFade.Target)+x, -60.0*cos(TAU*ColourFade.Target)+y,{255,255,255});
+		DrawText(x-60, y+60+10, "Colour:" + std::to_string(ColourFade.Colour) + "   Target:" + std::to_string(ColourFade.Target), {255,255,255});
+	}
+	*/
 }

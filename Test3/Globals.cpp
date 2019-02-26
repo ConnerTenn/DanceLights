@@ -62,3 +62,8 @@ RGB ColourScale(RGB rgb, double scale)
 {
 	return RGB{ (u8)(scale*rgb.R), (u8)(scale*rgb.G), (u8)(scale*rgb.B) };
 }
+
+double mmod(double a, double m)
+{
+	return fmod(a, m) + (a<0?m:0);
+}

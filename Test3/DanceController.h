@@ -1,6 +1,7 @@
 
 struct Cycle;
 struct Streak;
+struct Fade;
 class DanceController;
 
 #ifndef _DANCE_CONTROLLER_H_
@@ -10,8 +11,12 @@ class DanceController;
 #include "WindowController.h"
 #include "LightStrip.h"
 
+double Bistable(double x);
 double ASD(double x, double a, double s, double d);
 double ASDR(double x, double a, double s, double d, double r, double f);
+double RoundMean(double a, double b, double m, double w = 0.5);
+i8 RoundDirection(double a, double b, double m);
+RGB ColourMix(RGB a, RGB b, double w);
 
 struct Style
 {
@@ -30,7 +35,7 @@ struct Style
 	double Colour;
 };
 
-struct TargetTracker
+/*struct TargetTracker
 {
 	int Current;
 	int Target;
@@ -38,7 +43,7 @@ struct TargetTracker
 	bool Linear = true;
 	void Update();
 	void operator()();
-};
+};*/
 
 struct Cycle
 {
@@ -67,8 +72,17 @@ struct Streak
 	double Attack;
 	double Decay;
 	double Sustain;
-	u64 Offset;
+	u64 Align;
 	double Speed;
+	double Colour;
+};
+
+struct Fade
+{
+	double Target;
+	double Colour;
+	double Speed;
+	void Update(u64 now);
 };
 
 class DanceController
@@ -80,14 +94,17 @@ public:
 	double UpdateFreq = 50;
 	u64 Start, Now;//, Last, Delta;
 	
-	Cycle UpdateCycle, Beat;
+	Cycle UpdateCycle, Beat, MulBeat;
+	bool HalfTime = false, DoubleTime = false;
 	
 	RoundBuffer<Array<u8,5>> StateHist;
 	
 	std::vector<Streak> StreakList;
+	Fade ColourFade;
 	
 	std::vector<LightStrip> LightStripList;
 	
+	double PrimaryColour = RED;
 	
 	DanceController();
 	

@@ -19,7 +19,7 @@ public:
 	LightStrip(const LightStrip &other);
 	
 	
-	void Update(u64 now, std::vector<Streak> *streakList);//Style *style);
+	void Update(u64 now, std::vector<Streak> *streakList, Fade *fade);//Style *style);
 	
 	void Draw(int X, int Y, int Direction);
 
