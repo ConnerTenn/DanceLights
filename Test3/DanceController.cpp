@@ -125,15 +125,6 @@ bool Cycle::operator()(u64 t, u64 error, bool symmetricError, bool *latch)
 	return false;
 }
 
-void Fade::Update(u64 now)
-{
-	static u64 lastTime = now;
-	double step = (double)(now-lastTime)/Speed;
-	Colour = Colour +  MIN(step, abs(Target-Colour)) * RoundDirection(Colour, Target, 1.0);
-	Colour = mmod(Colour, 1.0);
-	lastTime = now;
-}
-
 DanceController::DanceController() : 
 		UpdateCycle(), Beat(4), StateHist(120)
 {
@@ -142,8 +133,6 @@ DanceController::DanceController() :
 	UpdateCycle.Align = StartTime;
 	//Beat.Align = StartTime;
 	Beat.ActOnPulseOn = true;
-	
-	ColourFade.Speed = 1500;
 	
 	
 	LightStripList.push_back(LightStrip(70));
@@ -176,49 +165,15 @@ void DanceController::Update()
 	static bool beatLatch = false;
 	if (Beat(Now, UpdateCycle.Period/4, false, &beatLatch))
 	{
-		Streak streak;
-		streak.Attack = 50.0;
-		streak.Decay = 50.0;
-		streak.Sustain = 0.0;
-		streak.Align = Now;
-		static bool flip = false;
-		streak.Speed = (Beat.Period/2)/70;
-		streak.Colour = PrimaryColour;
-		if (flip)
-		{
-			streak.Attack = 0;//(1*Beat.Period)/3;
-			streak.Decay = (1*Beat.Period)/3;
-			streak.Sustain = 0;
-			streak.Speed = 0;
-			streak.Colour = RED;
-			//StreakList.push_back(streak);
-		}
-		StreakList.push_back(streak);
 		
-		PrimaryColour = mmod(PrimaryColour + (rand()%3)/6.0+2.0/6.0, 1.0);//(rand()%1000)/1000.0;
-		ColourFade.Target = mmod(ColourFade.Colour + (rand()%3)/6.0+2.0/6.0, 1.0);
-		//flip = !flip;
+		
+		PrimaryColour = mmod(PrimaryColour + (rand()%3)/6.0+2.0/6.0, 1.0);
 	}
 	
-	int length = 0;
-	u64 delay = 0;
 	for (u64 i = 0; i < LightStripList.size(); i++)
 	{
-		LightStripList[i].Update(Now - delay, &StreakList, &ColourFade);
-		length = MAX(length, LightStripList[i].Length);
-		//delay += 500;
+		LightStripList[i].Update(Now);
 	}
-	//delay-=500;
-	
-	for (u64 i = 0; i < StreakList.size();)
-	{
-		if ((i64)Now - (i64)StreakList[i].Align > 5000)//StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
-		{
-			StreakList.erase(StreakList.begin()+i);
-		}
-		else { i++; }
-	}
-	ColourFade.Update(Now);
 }
 
 void DanceController::Draw(int xOff, int yOff)
@@ -259,7 +214,6 @@ void DanceController::Draw(int xOff, int yOff)
 	
 	DrawText(xOff+10, StateHist.Size()*10+20+yOff+35, "Beat Period:" + std::to_string(Beat.Period) + "   Beat Align:" + std::to_string(Beat.Align), {255,255,255});
 	DrawText(xOff+10, StateHist.Size()*10+20+yOff+55, "MulBeat Period:" + std::to_string(MulBeat.Period) + "   MulBeat Align:" + std::to_string(MulBeat.Align), {255,255,255});
-	DrawText(xOff+200, yOff+80, "Streak Count:" + std::to_string(StreakList.size()), {255,255,255});
 	
 	for (int i = 0; i < (int)LightStripList.size(); i++)
 	{
