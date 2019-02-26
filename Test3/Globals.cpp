@@ -43,7 +43,7 @@ double BlueVal(double val)
 	return val = 2.0-abs(6.0*val-4.0), val=MIN(val,1.0), MAX(val,0.0);
 }
 
-RGB ColourVal(double val)
+RGB RGBVal(ColourVal val)
 {
 	/*return RGB {
 		(u8)(255.0*((0.0 <= val && val < 1.0/3.0 ? (1.0-3.0*val) : 0)		+ (2.0/3.0 < val && val <= 1.0 ? (3.0*val-2.0) : 0))),
@@ -55,10 +55,10 @@ RGB ColourVal(double val)
 		(u8)(255.0*(0.0 <= val && val <= 2.0/3.0 ? (OppCos(3.0*PI*(val+1.0/3.0))+1.0)/2.0 : 0)),
 		(u8)(255.0*(1.0/3.0 <= val && val <= 1.0 ? (OppCos(3.0*PI*(val+2.0/3.0))+1.0)/2.0 : 0))};*/
 		
-	return RGB{(u8)(255.0*RedVal(val)),(u8)(255.0*GreenVal(val)),(u8)(255.0*BlueVal(val))};
+	return RGB{(u8)(255.0*RedVal(val.Colour)*val.Scale),(u8)(255.0*GreenVal(val.Colour)*val.Scale),(u8)(255.0*BlueVal(val.Colour)*val.Scale)};
 }
 
-RGB ColourScale(RGB rgb, double scale)
+RGB RGBScale(RGB rgb, double scale)
 {
 	return RGB{ (u8)(scale*rgb.R), (u8)(scale*rgb.G), (u8)(scale*rgb.B) };
 }

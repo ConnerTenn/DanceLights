@@ -24,7 +24,7 @@ int main()
 		
 		for (int i = 0; i < 200; i++)
 		{
-			DrawRectangle(0+10*i, 0, 10, 20, ColourVal(i/200.0));
+			DrawRectangle(0+10*i, 0, 10, 20, RGBVal({i/200.0,1.0}));
 		}
 		//Graph(200, 600, 0.0, 1.0, 100.0, 100.0, RedVal, {255,0,0});
 		//Graph(200, 600, 0.0, 1.0, 100.0, 100.0, GreenVal, {0,255,0});

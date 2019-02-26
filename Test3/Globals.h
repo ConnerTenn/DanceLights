@@ -48,6 +48,12 @@ struct RGB
 	u_int64_t XColour();
 };
 
+struct ColourVal
+{
+	double Colour;
+	double Scale;
+};
+
 #define RED (0.0)
 #define YELLOW (1.0/6.0)
 #define GREEN (2.0/6.0)
@@ -59,8 +65,8 @@ double OppCos(double x);
 double RedVal(double val);
 double GreenVal(double val);
 double BlueVal(double val);
-RGB ColourVal(double val);
-RGB ColourScale(RGB rgb, double scale);
+RGB RGBVal(ColourVal val);
+RGB RGBScale(RGB rgb, double scale);
 double mmod(double a, double m);
 
 template<class T, int N>

@@ -52,12 +52,14 @@ public:
 	
 	std::vector<LightStrip> LightStripList;
 	
-	double PrimaryColour = RED;
+	//Colour History
 	
 	DanceController();
 	
 	void Update();
 	void Draw(int xOff, int yOff);
+	
+	ColourVal GetColour(u64 delay);
 	
 };
 

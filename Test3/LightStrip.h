@@ -11,7 +11,7 @@ class LightStrip
 public:
 	
 	DynamicArray<RGB> Lights;
-	DynamicArray<double> Delay;
+	DynamicArray<u64> Delay;
 	int Length;
 	
 	
@@ -19,7 +19,7 @@ public:
 	LightStrip(const LightStrip &other);
 	
 	
-	void Update(u64 now);//Style *style);
+	void Update(u64 now, DanceController *dance);//Style *style);
 	
 	void Draw(int X, int Y, int Direction);
 

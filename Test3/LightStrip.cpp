@@ -18,9 +18,12 @@ LightStrip::LightStrip(const LightStrip &other) :
 	}
 }
 
-void LightStrip::Update(u64 now)
+void LightStrip::Update(u64 now, DanceController *dance)
 {
-	
+	for (int i = 0; i < Length; i++)
+	{
+		Lights[i] = RGBVal(dance->GetColour(Delay[i]));
+	}
 }
 
 void LightStrip::Draw(int xOff, int yOff, int direction)

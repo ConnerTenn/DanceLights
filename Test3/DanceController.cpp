@@ -167,12 +167,12 @@ void DanceController::Update()
 	{
 		
 		
-		PrimaryColour = mmod(PrimaryColour + (rand()%3)/6.0+2.0/6.0, 1.0);
+		//PrimaryColour = mmod(PrimaryColour + (rand()%3)/6.0+2.0/6.0, 1.0);
 	}
 	
 	for (u64 i = 0; i < LightStripList.size(); i++)
 	{
-		LightStripList[i].Update(Now);
+		LightStripList[i].Update(Now, this);
 	}
 }
 
@@ -238,3 +238,9 @@ void DanceController::Draw(int xOff, int yOff)
 	}
 	*/
 }
+
+ColourVal DanceController::GetColour(u64 delay)
+{
+	return {0,0};
+}
+
