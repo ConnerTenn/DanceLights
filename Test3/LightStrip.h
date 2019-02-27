@@ -10,9 +10,9 @@ class LightStrip
 {
 public:
 	
+	int Length;
 	DynamicArray<RGB> Lights;
 	DynamicArray<u64> Delay;
-	int Length;
 	
 	
 	LightStrip(int length);

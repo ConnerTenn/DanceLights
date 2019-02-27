@@ -91,7 +91,7 @@ int main()
 		
 		//u64 nextTime = GetMilliseconds();
 		//usleep((100-(GetMilliseconds()-lastTime))*1000);
-		usleep(1000);
+		usleep(500);
 	}
 	
 	

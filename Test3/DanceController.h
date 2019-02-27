@@ -10,6 +10,7 @@ class DanceController;
 #include "LightStrip.h"
 
 double Bistable(double x);
+double Bistable(double x, double a);
 double ASD(double x, double a, double s, double d);
 double ASDR(double x, double a, double s, double d, double r, double f);
 double RoundMean(double a, double b, double m, double w = 0.5);
@@ -36,6 +37,13 @@ struct Cycle
 	bool operator()(u64 time, u64 error = 2, bool symmetricError = false, bool *latch = 0);
 };
 
+struct ColourTimestamp
+{
+	u64 Time;
+	u64 Attack;
+	ColourVal Colour;
+};
+
 class DanceController
 {
 public:
@@ -52,14 +60,14 @@ public:
 	
 	std::vector<LightStrip> LightStripList;
 	
-	//Colour History
+	std::vector<ColourTimestamp> ColourHist;
 	
 	DanceController();
 	
 	void Update();
 	void Draw(int xOff, int yOff);
 	
-	ColourVal GetColour(u64 delay);
+	RGB GetColour(u64 now);
 	
 };
 

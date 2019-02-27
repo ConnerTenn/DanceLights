@@ -2,19 +2,21 @@
 #include "LightStrip.h"
 
 LightStrip::LightStrip(int length) :
-		Lights(length), Delay(length), Length(length)
+		Length(length), Lights(Length), Delay(Length)
 {
 	for (int i = 0; i < Length; i++)
 	{
 		Lights[i] = {0,0,0};
+		Delay[i] = (u64)(((1.0-cos(TAU*(i-Length/2)/30.0)+1)/2.0)*100.0);
 	}
 }
 LightStrip::LightStrip(const LightStrip &other) :
-		Lights(other.Length), Delay(other.Length), Length(other.Length)
+		Length(other.Length), Lights(Length), Delay(Length)
 {
 	for (int i = 0; i < Length; i++)
 	{
 		Lights[i] = other.Lights.Values[i];
+		Delay[i] = other.Delay.Values[i];
 	}
 }
 
@@ -22,7 +24,7 @@ void LightStrip::Update(u64 now, DanceController *dance)
 {
 	for (int i = 0; i < Length; i++)
 	{
-		Lights[i] = RGBVal(dance->GetColour(Delay[i]));
+		Lights[i] = dance->GetColour(now - Delay[i]);
 	}
 }
 
