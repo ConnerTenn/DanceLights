@@ -40,6 +40,8 @@ u64 GetNanoseconds();
 
 extern u64 StartTime;
 
+double mmod(double a, double m);
+
 struct RGB
 {
 	u_int8_t R;
@@ -67,7 +69,7 @@ double GreenVal(double val);
 double BlueVal(double val);
 RGB RGBVal(ColourVal val);
 RGB RGBScale(RGB rgb, double scale);
-double mmod(double a, double m);
+RGB ColourMix(RGB a, RGB b, double w);
 
 template<class T, int N>
 struct Array

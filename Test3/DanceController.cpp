@@ -30,11 +30,6 @@ double RoundMean(double a, double b, double m, double w)
 	return fmod((a + (abs(a-b)>m/2.0?1.0:0.0))*w + b*(1.0-w),m);
 }
 
-RGB ColourMix(RGB a, RGB b, double w)
-{
-	return {(u8)(a.R*(1.0-w) + b.R*(w)), (u8)(a.G*(1.0-w) + b.G*(w)), (u8)(a.B*(1.0-w) + b.B*(w))};
-}
-
 i8 RoundDirection(double a, double b, double m)
 {
 	return a==b? 0 : (mmod(b-a,m)<mmod(a-b,m) ? 1 : -1);
@@ -221,20 +216,22 @@ void DanceController::Draw(int xOff, int yOff)
 		}
 		
 		//State Hist
-		OutlineRectangle(xOff+20+10, 10*i+yOff+35, 40, 10, RGB{255,255,255});
+		//OutlineRectangle(xOff+20+10, 10*i+yOff+35, 40, 10, RGB{255,255,255});
 		for (int j = 0; j < 4; j++)
 		{
 			if (StateHist[i][j]==1) { DrawRectangle(10*j+xOff+20+10, 10*i+yOff+35, 10, 10, RGB{255,255,255}); }
 		}
 		
 		//Beat Hist
-		OutlineRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255});
+		//OutlineRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255});
 		if(StateHist[i][4]) { DrawRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255}); }
 	}
+	OutlineRectangle(xOff+10-10, yOff+35, 20+4*10+20, 10*StateHist.Size(), RGB{255,255,255});
 	
 	DrawText(xOff+10, StateHist.Size()*10+20+yOff+35, "Beat Period:" + std::to_string(Beat.Period) + "   Beat Align:" + std::to_string(Beat.Align), {255,255,255});
 	DrawText(xOff+10, StateHist.Size()*10+20+yOff+55, "MulBeat Period:" + std::to_string(MulBeat.Period) + "   MulBeat Align:" + std::to_string(MulBeat.Align), {255,255,255});
 	
+	//Draw Light Strips
 	DrawText(xOff+200, yOff+80, "Timestamp Count:" + std::to_string(ColourHist.size()), {255,255,255});
 	for (int i = 0; i < (int)LightStripList.size(); i++)
 	{
@@ -245,19 +242,6 @@ void DanceController::Draw(int xOff, int yOff)
 		OutlineRectangle(xOff + 200, yOff + 100 + i*40, 20*LightStripList[i].Length, 20, {255,255,255});
 	}
 	
-	/*
-	{
-		int x = xOff + 2000, y = yOff + 200;
-		for (int i = 0; i < 500; i++)
-		{
-			//DrawPixel(50.0*sin(TAU*i/500.0)+x, 50.0*cos(TAU*i/500.0)+y, ColourVal(i/500.0));
-			DrawLine(x,y,50.0*sin(TAU*i/500.0)+x, -50.0*cos(TAU*i/500.0)+y,ColourVal(i/500.0));
-		}
-		DrawLine(x,y,60.0*sin(TAU*ColourFade.Colour)+x, -60.0*cos(TAU*ColourFade.Colour)+y,{255,255,255});
-		DrawLine(x,y,60.0*sin(TAU*ColourFade.Target)+x, -60.0*cos(TAU*ColourFade.Target)+y,{255,255,255});
-		DrawText(x-60, y+60+10, "Colour:" + std::to_string(ColourFade.Colour) + "   Target:" + std::to_string(ColourFade.Target), {255,255,255});
-	}
-	*/
 }
 
 RGB DanceController::GetColour(u64 now)

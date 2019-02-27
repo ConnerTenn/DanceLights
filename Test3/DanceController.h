@@ -15,7 +15,6 @@ double ASD(double x, double a, double s, double d);
 double ASDR(double x, double a, double s, double d, double r, double f);
 double RoundMean(double a, double b, double m, double w = 0.5);
 i8 RoundDirection(double a, double b, double m);
-RGB ColourMix(RGB a, RGB b, double w);
 
 struct Cycle
 {
