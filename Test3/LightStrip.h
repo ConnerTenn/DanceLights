@@ -12,14 +12,14 @@ public:
 	
 	int Length;
 	DynamicArray<RGB> Lights;
-	DynamicArray<u64> Delay;
+	DynamicArray<i64> Delay;
 	
 	
 	LightStrip(int length);
 	LightStrip(const LightStrip &other);
 	
 	
-	void Update(u64 now, DanceController *dance);//Style *style);
+	void Update(i64 now, DanceController *dance);//Style *style);
 	
 	void Draw(int X, int Y, int Direction);
 

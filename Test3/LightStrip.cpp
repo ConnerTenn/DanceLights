@@ -7,7 +7,7 @@ LightStrip::LightStrip(int length) :
 	for (int i = 0; i < Length; i++)
 	{
 		Lights[i] = {0,0,0};
-		Delay[i] = (u64)(((1.0-cos(TAU*(i-Length/2)/30.0)+1)/2.0)*100.0);
+		Delay[i] = (i64)(((1.0-cos(TAU*(i-Length/2)/30.0)+1)/2.0)*100.0);
 	}
 }
 LightStrip::LightStrip(const LightStrip &other) :
@@ -20,7 +20,7 @@ LightStrip::LightStrip(const LightStrip &other) :
 	}
 }
 
-void LightStrip::Update(u64 now, DanceController *dance)
+void LightStrip::Update(i64 now, DanceController *dance)
 {
 	for (int i = 0; i < Length; i++)
 	{

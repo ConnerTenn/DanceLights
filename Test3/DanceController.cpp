@@ -41,7 +41,7 @@ Cycle::Cycle(int len) :
 	
 }
 
-void Cycle::PulseOn(u64 t)
+void Cycle::PulseOn(i64 t)
 {
 	if (!PulseState)
 	{
@@ -51,7 +51,7 @@ void Cycle::PulseOn(u64 t)
 	}
 }
 
-void Cycle::PulseOff(u64 t)
+void Cycle::PulseOff(i64 t)
 {
 	if (PulseState)
 	{
@@ -60,7 +60,7 @@ void Cycle::PulseOff(u64 t)
 	}
 }
 
-void Cycle::Pulse(u64 t)
+void Cycle::Pulse(i64 t)
 {
 	PulseHist.InsertBegin(t);
 	if (Period == 0)
@@ -71,13 +71,13 @@ void Cycle::Pulse(u64 t)
 	else 
 	{
 		u16 count = 0;
-		u64 newFreq = 0; count = 0;
+		double newFreq = 0; count = 0;
 		for (int i = 0; i < PulseHist.Size()-1; i++)
 		{
 			if (PulseHist[i]-PulseHist[i+1]<MAX(1000,Period*5))// || t-LastAccept>=2000)
 			{
 				//frequency is based off of the overage of the current frequency and the timing of the last pulse
-				newFreq += ((PulseHist[i]-PulseHist[i+1]) + Period)/2;
+				newFreq += ((PulseHist[i]-PulseHist[i+1]) + Period)/2.0;
 				LastAccept=t;
 				count++;
 			}
@@ -85,31 +85,31 @@ void Cycle::Pulse(u64 t)
 		}
 		if (count) { Period = newFreq / count; }
 		
-		u64 newOff = 0; count = 0;
+		i64 newAlign = 0; count = 0;
 		for (int i = 0; i < PulseHist.Size()-1; i++)
 		{
 			//if (PulseHist[i-1]-PulseHist[i]<Period*3)
-			u64 q = (PulseHist[0]-Align-Period/2)/Period+1;
-			if (i==0 || PulseHist[i]-PulseHist[i+1]<Period*2)
+			i64 q = (PulseHist[0]-Align-Period/2.0)/Period+1.0;
+			if (i==0 || (double)(PulseHist[i]-PulseHist[i+1])<Period*2.0)
 			{
 				//Calculates the new align based on how far off the new pulse was
 				//newOff += MOD(PulseHist[i]-Align-Period/2,Period)+Align-Period/2;
-				newOff += (PulseHist[i]-Align-Period/2)+Align-Period/2-q*Period-i*Period;
+				newAlign += (PulseHist[i]-Align-Period/2)+Align-Period/2-q*Period-i*Period;
 				count++;
 			}
 			else { i=PulseHist.Size(); }
 			//std::cout << "    Diff: " << (i64)((i64)PulseHist[i]-(i64)PulseHist[i+1]) << "    DiffDiff: " << ABS(((i64)PulseHist[i]-(i64)PulseHist[i+1])-(i64)Period) << "\n";
 		}
-		Align = newOff / count;
+		Align = newAlign / count;
 		//std::cout << "Count: " << count << "\n";
 	}
 	//std::cout << "Off: " << Align << "  Freq: " << Frequency << "\n";
 }
 
-bool Cycle::operator()(u64 t, u64 error, bool symmetricError, bool *latch)
+bool Cycle::operator()(i64 t, double error, bool symmetricError, bool *latch)
 {
 	if (Period == 0) { return false; }
-	if (MOD((i64)(t-Align+error/2*(u8)symmetricError),(i64)Period) < (i64)error)
+	if (mmod((double)(t-Align)+error/2.0*(symmetricError?1:0),Period) < (double)error)
 	{
 		if (!latch || !*latch)
 		{
@@ -129,7 +129,7 @@ DanceController::DanceController() :
 		UpdateCycle(), Beat(4), StateHist(120)
 {
 	Start = GetMilliseconds();
-	UpdateCycle.Period = 1000.0/UpdateFreq;
+	UpdateCycle.Period = 20;
 	UpdateCycle.Align = StartTime;
 	//Beat.Align = StartTime;
 	Beat.ActOnPulseOn = true;
@@ -176,12 +176,12 @@ void DanceController::Update()
 		//PrimaryColour = mmod(PrimaryColour + (rand()%3)/6.0+2.0/6.0, 1.0);
 	}
 	
-	for (u64 i = 0; i < LightStripList.size(); i++)
+	for (i64 i = 0; i < (i64)LightStripList.size(); i++)
 	{
 		LightStripList[i].Update(Now-i*20, this);
 	}
 	
-	for (u64 i = 0; i < ColourHist.size();)
+	for (i64 i = 0; i < (i64)ColourHist.size();)
 	{
 		if ((i64)Now - (i64)ColourHist[i].Time > 3000)//StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
 		{
@@ -244,7 +244,7 @@ void DanceController::Draw(int xOff, int yOff)
 	
 }
 
-RGB DanceController::GetColour(u64 now)
+RGB DanceController::GetColour(i64 now)
 {
 	RGB colour = {0,0,0};
 	//for (int i = ColourHist.size(); i >= 0; i--)

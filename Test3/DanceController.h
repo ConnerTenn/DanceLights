@@ -18,28 +18,28 @@ i8 RoundDirection(double a, double b, double m);
 
 struct Cycle
 {
-	u64 Period = 0;
-	u64 Align = 0;
+	double Period = 0;
+	i64 Align = 0;
 	
 	bool ActOnPulseOn = false;
 	
 	Cycle(int len=1);
 	
-	u64 OnTime = 0, LastAccept = 0;
-	RoundBuffer<u64> PulseHist;
+	i64 OnTime = 0, LastAccept = 0;
+	RoundBuffer<i64> PulseHist;
 	bool PulseState = false;
-	void PulseOn(u64 time);
-	void PulseOff(u64 time);
-	void Pulse(u64 time);
+	void PulseOn(i64 time);
+	void PulseOff(i64 time);
+	void Pulse(i64 time);
 	
 	//bool Triggered = false;
-	bool operator()(u64 time, u64 error = 2, bool symmetricError = false, bool *latch = 0);
+	bool operator()(i64 time, double error = 1, bool symmetricError = false, bool *latch = 0);
 };
 
 struct ColourTimestamp
 {
-	u64 Time;
-	u64 Attack;
+	i64 Time;
+	i64 Attack;
 	ColourVal Colour;
 };
 
@@ -49,8 +49,7 @@ public:
 	u8 StateIn[4];
 	u8 BeatIn;
 	
-	double UpdateFreq = 50;
-	u64 Start, Now;//, Last, Delta;
+	i64 Start, Now;//, Last, Delta;
 	
 	Cycle UpdateCycle, Beat, MulBeat;
 	bool HalfTime = false, DoubleTime = false;
@@ -66,7 +65,7 @@ public:
 	void Update();
 	void Draw(int xOff, int yOff);
 	
-	RGB GetColour(u64 now);
+	RGB GetColour(i64 now);
 	
 };
 
