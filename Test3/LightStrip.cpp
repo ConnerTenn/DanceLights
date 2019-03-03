@@ -7,7 +7,8 @@ LightStrip::LightStrip(int length) :
 	for (int i = 0; i < Length; i++)
 	{
 		Lights[i] = {0,0,0};
-		Delay[i] = (i64)(((1.0-cos(TAU*(i-Length/2)/30.0)+1)/2.0)*100.0);
+		//Delay[i] = (i64)(((1.0-cos(TAU*(i-Length/2)/30.0)+1)/2.0)*100.0);
+		Delay[i] = i*50;
 	}
 }
 LightStrip::LightStrip(const LightStrip &other) :

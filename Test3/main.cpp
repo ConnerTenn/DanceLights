@@ -4,7 +4,7 @@
 #include "DanceController.h"
 #include "LightStrip.h"
 
-u64 StartTime = GetMilliseconds();
+u64 StartTime = GetMicroseconds();
 //TerminalBuffer TermBuffer(10, 900, 30);
 
 DanceController Dance;
@@ -16,6 +16,7 @@ int main()
 	
 	//u64 startTime = GetMilliseconds();
 	u64 lastTime = StartTime;
+	u64 maxTime = 0;
 	
 	bool run = true;
 	while (run)
@@ -24,7 +25,7 @@ int main()
 		
 		for (int i = 0; i < 100; i++)
 		{
-			DrawRectangle(0+10*i, 0, 20, 20, RGBVal({i/100.0,1.0}));
+			DrawRectangle(400+10*i, 0, 20, 20, RGBVal({i/100.0,1.0}));
 		}
 		for (int i = 0; false && i < 100; i++)
 		{
@@ -93,8 +94,11 @@ int main()
 		
 		Dance.Update();
 		Dance.Draw(10,30);
-		DrawText(10, 10, "Runtime:" + std::to_string((lastTime-StartTime)/1000.0) + "  Frametime:" + std::to_string((GetMilliseconds() - lastTime)/1000.0), {255,255,255});
-		lastTime = GetMilliseconds();
+		u64 delta = GetMicroseconds() - lastTime;
+		maxTime = MAX(delta, maxTime);
+		DrawText(10, 10, "Runtime:" + std::to_string((lastTime-StartTime)/1'000'000.0) + "  Frametime:" + std::to_string(delta/1'000'000.0) + "  Maxtime:" + std::to_string(maxTime/1'000'000.0), {255,255,255});
+		if ((lastTime-StartTime) % 1'000'000 < 1000) { maxTime = 0; }
+		lastTime = GetMicroseconds();
 		
 		
 	

@@ -125,6 +125,10 @@ bool Cycle::operator()(i64 t, double error, bool symmetricError, bool *latch)
 	return false;
 }
 
+
+
+
+
 DanceController::DanceController() : 
 		UpdateCycle(), Beat(4), StateHist(120)
 {
@@ -183,7 +187,7 @@ void DanceController::Update()
 	
 	for (i64 i = 0; i < (i64)ColourHist.size();)
 	{
-		if ((i64)Now - (i64)ColourHist[i].Time > 3000)//StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
+		if ((i64)Now - (i64)ColourHist[i].Time > 5000)//StreakList[i].Speed+(u64)(2*StreakList[i].Attack*(StreakList[i].Speed/length) + StreakList[i].Sustain*(StreakList[i].Speed/length)) + delay)
 		{
 			ColourHist.erase(ColourHist.begin()+i);
 		}
@@ -248,11 +252,28 @@ RGB DanceController::GetColour(i64 now)
 {
 	RGB colour = {0,0,0};
 	//for (int i = ColourHist.size(); i >= 0; i--)
-	for (int i = 0; i < (int)ColourHist.size() && ColourHist[i].Time < now; i++)
+	int i = 0;
+	//for (; i < (int)ColourHist.size()-1 && ColourHist[i+1].Time < now; i++)
+	for (i=ColourHist.size()-1; i>=0 && ColourHist[i].Time > now; i--) { }
+	if (ColourHist.size())
 	{
 		double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
-		colour = ColourMix(colour, RGBVal(ColourHist[i].Colour), mix);
+		colour = ColourMix(i == 0 ? colour : RGBVal(ColourHist[i-1].Colour), RGBVal(ColourHist[i].Colour), mix);
 	}
+	
+	/*for (int i = (int)ColourHist.size()-1; i>=0; i--)
+	{
+		if (i) { colour = RGBVal(ColourHist[i-1].Colour); } else { colour = {0,0,0}; }
+		if (ColourHist[i].Time < now)
+		{
+			double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
+			colour = ColourMix(colour, RGBVal(ColourHist[i].Colour), mix);
+			return colour;
+		}
+	}*/
+	/*if (now < 0) { now = 0; }
+	if (now > 3000) { return {0,0,0}; }
+	colour = ColourHistMap[now];*/
 	return colour;
 }
 
