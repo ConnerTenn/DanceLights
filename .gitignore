@@ -2,3 +2,5 @@ portaudio/
 *.o
 program*
 libmad
+ArduinoCode/build
+ArduinoCode/FastLED
