@@ -9,10 +9,12 @@ class DanceController;
 #include "WindowController.h"
 #include "LightStrip.h"
 
-double Bistable(double x);
-double Bistable(double x, double a);
-double ASD(double x, double a, double s, double d);
-double ASDR(double x, double a, double s, double d, double r, double f);
+inline double Bistable(double x, double a)
+{
+	return x<0 ? 0 : (x<a && a!=0 ? x/a : 1);
+}
+//double ASD(double x, double a, double s, double d);
+//double ASDR(double x, double a, double s, double d, double r, double f);
 double RoundMean(double a, double b, double m, double w = 0.5);
 i8 RoundDirection(double a, double b, double m);
 

@@ -63,13 +63,31 @@ struct ColourVal
 #define BLUE (4.0/6.0)
 #define MAGENTA (5.0/6.0)
 
-double OppCos(double x);
-double RedVal(double val);
-double GreenVal(double val);
-double BlueVal(double val);
-RGB RGBVal(ColourVal val);
-RGB RGBScale(RGB rgb, double scale);
-RGB ColourMix(RGB a, RGB b, double w);
+//double OppCos(double x);
+inline double RedVal(double val)
+{
+	return val = 2.0-abs(6.0*(0.5-abs(val-0.5))), val=MIN(val,1.0), MAX(val,0.0);
+}
+inline double GreenVal(double val)
+{
+	return val = 2.0-abs(6.0*val-2.0), val=MIN(val,1.0), MAX(val,0.0);
+}
+inline double BlueVal(double val)
+{
+	return val = 2.0-abs(6.0*val-4.0), val=MIN(val,1.0), MAX(val,0.0);
+}
+inline RGB RGBVal(ColourVal val)
+{		
+	return RGB{(u8)(255.0*RedVal(val.Colour)*val.Scale),(u8)(255.0*GreenVal(val.Colour)*val.Scale),(u8)(255.0*BlueVal(val.Colour)*val.Scale)};
+}
+inline RGB RGBScale(RGB rgb, double scale)
+{
+	return RGB{ (u8)(scale*rgb.R), (u8)(scale*rgb.G), (u8)(scale*rgb.B) };
+}
+inline RGB ColourMix(RGB a, RGB b, double w)
+{
+	return {(u8)(a.R*(1.0-w) + b.R*(w)), (u8)(a.G*(1.0-w) + b.G*(w)), (u8)(a.B*(1.0-w) + b.B*(w))};
+}
 
 template<class T, int N>
 struct Array

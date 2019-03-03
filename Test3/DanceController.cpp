@@ -1,12 +1,7 @@
 
 #include "DanceController.h"
 
-double Bistable(double x)
-{
-	return x > 1 ? 1 : (x < 0 ? 0 : (sin(PI*(x-0.5))+1.0)/2.0);
-}
-
-double Bistable(double x, double a)
+/*double Bistable(double x, double a)
 {
 	return x<0?0 : (x<a && a!=0 ? x/a : 1);
 }
@@ -22,7 +17,7 @@ double ASDR(double x, double a, double s, double d, double r, double f)
 {
 	double t = a+s+d+r;
 	return ASD(fmod(f*x,1),a/t,s/t,d/t);
-}
+}*/
 
 double RoundMean(double a, double b, double m, double w)
 {
@@ -251,29 +246,15 @@ void DanceController::Draw(int xOff, int yOff)
 RGB DanceController::GetColour(i64 now)
 {
 	RGB colour = {0,0,0};
-	//for (int i = ColourHist.size(); i >= 0; i--)
+	
 	int i = 0;
-	//for (; i < (int)ColourHist.size()-1 && ColourHist[i+1].Time < now; i++)
-	for (i=ColourHist.size()-1; i>=0 && ColourHist[i].Time > now; i--) { }
-	if (ColourHist.size())
+	int max=ColourHist.size();
+	for (i=max-1; i>=0 && ColourHist[i].Time > now; i--) { }
+	if (max)
 	{
 		double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
 		colour = ColourMix(i == 0 ? colour : RGBVal(ColourHist[i-1].Colour), RGBVal(ColourHist[i].Colour), mix);
 	}
-	
-	/*for (int i = (int)ColourHist.size()-1; i>=0; i--)
-	{
-		if (i) { colour = RGBVal(ColourHist[i-1].Colour); } else { colour = {0,0,0}; }
-		if (ColourHist[i].Time < now)
-		{
-			double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
-			colour = ColourMix(colour, RGBVal(ColourHist[i].Colour), mix);
-			return colour;
-		}
-	}*/
-	/*if (now < 0) { now = 0; }
-	if (now > 3000) { return {0,0,0}; }
-	colour = ColourHistMap[now];*/
 	return colour;
 }
 

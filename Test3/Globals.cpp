@@ -21,7 +21,7 @@ double mmod(double a, double m)
 }
 
 
-double RedVal(double val)
+/*double RedVal(double val)
 {
 	//return (0.0/6.0 <= val && val < 1.0/6.0 ? 1 : 0) + (1.0/6.0 <= val && val < 2.0/6.0 ? -6.0*val+2.0 : 0) + (4.0/6.0 <= val && val < 5.0/6.0 ? 6.0*val-4.0 : 0) + (5.0/6.0 <= val && val < 6.0/6.0 ? 1 : 0);
 	return val = 2.0-abs(6.0*(0.5-abs(val-0.5))), val=MIN(val,1.0), MAX(val,0.0);
@@ -48,4 +48,4 @@ RGB RGBScale(RGB rgb, double scale)
 RGB ColourMix(RGB a, RGB b, double w)
 {
 	return {(u8)(a.R*(1.0-w) + b.R*(w)), (u8)(a.G*(1.0-w) + b.G*(w)), (u8)(a.B*(1.0-w) + b.B*(w))};
-}
+}*/
