@@ -16,14 +16,15 @@ void loop()
 {
 	for(int i = 0; i < NUM_LEDS; i++) 
 	{
-		leds[i] = CRGB{255,255,255};
+		leds[i] = CRGB{255/8,255/8,255/8};
 
 		FastLED.show();
 
 		delay(10);
 		
-		leds[i] = CRGB::Black;
+		//leds[i] = CRGB::Black;
 	}
+	delay(500-10);
 	for(int i = 0; i < NUM_LEDS; i++) 
 	{
 		leds[i] = CRGB::Black;

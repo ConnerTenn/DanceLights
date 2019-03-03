@@ -2,6 +2,7 @@
 all: compile upload
 
 compile:
+	[[ -d ./build ]] || mkdir build
 	arduino-builder \
 		-compile \
 		-hardware /usr/share/arduino/hardware \
