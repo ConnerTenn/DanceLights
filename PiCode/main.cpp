@@ -1,16 +1,9 @@
+
 #include <iostream>
-#include <wiringPi.h>
+#include <ws2811.h>
 
 int main()
 {
-	wiringPiSetup();
-	
-	wiringPiSetupGpio();
-	
-	pinMode(17, INPUT);
-	digitalWrite(23, HIGH);
-	delay(1000);
-	digitalWrite(23, LOW);
 	
 
 	return 0;
