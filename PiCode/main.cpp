@@ -56,32 +56,33 @@ inline u32 RGBVal(double val)
 #define GPIO_PIN                18
 #define DMA                     10
 #define STRIP_TYPE              WS2811_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
+#define LED_COUNT 300
 
 
 bool Run = true;
-ws2811_led_t Strip[300];
+ws2811_led_t Strip[LED_COUNT];
 ws2811_t ledstring =
 {
-    .freq = TARGET_FREQ,
-    .dmanum = DMA,
-    .channel =
-    {
-        [0] =
-        {
-            .gpionum = GPIO_PIN,
-            .count = LED_COUNT,
-            .invert = 0,
-            .brightness = 255,
-            .strip_type = STRIP_TYPE,
-        },
-        [1] =
-        {
-            .gpionum = 0,
-            .count = 0,
-            .invert = 0,
-            .brightness = 0,
-        },
-    },
+	.freq = TARGET_FREQ,
+	.dmanum = DMA,
+	.channel =
+	{
+		[0] =
+		{
+			.gpionum = GPIO_PIN,
+			.count = LED_COUNT,
+			.invert = 0,
+			.brightness = 255,
+			.strip_type = STRIP_TYPE,
+		},
+		[1] =
+		{
+			.gpionum = 0,
+			.count = 0,
+			.invert = 0,
+			.brightness = 0,
+		},
+	},
 };
 
 static void ctrl_c_handler(int signum)
@@ -92,14 +93,14 @@ static void ctrl_c_handler(int signum)
 
 void setup_handlers()
 {
-	sigaction sa = { .sa_handler = ctrl_c_handler };
+	struct sigaction sa = { .sa_handler = ctrl_c_handler };
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 }
 
 void Clear()
 {
-	for (int i = 0; i < 300; i++)
+	for (int i = 0; i < LED_COUNT; i++)
 	{
 		Strip[i] = 0;
 	}
@@ -107,15 +108,15 @@ void Clear()
 
 void Update()
 {
-	for (int i = 0; i < 300; i++)
+	for (int i = 0; i < LED_COUNT; i++)
 	{
-		Strip[i] = RGBVal(((i+time(0)/100)%300)/(300.0-1.0));
+		Strip[i] = RGBVal(((i+time(0)/100)%LED_COUNT)/(LED_COUNT-1.0));
 	}
 }
 
 void Render()
 {
-	for (int i = 0; i < 300; i++)
+	for (int i = 0; i < LED_COUNT; i++)
 	{
 		ledstring.channel[0].leds[i] = Strip[i];
 	}
