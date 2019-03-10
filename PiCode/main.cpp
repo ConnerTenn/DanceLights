@@ -55,8 +55,8 @@ inline u32 RGBVal(double val)
 #define TARGET_FREQ             WS2811_TARGET_FREQ
 #define GPIO_PIN                18
 #define DMA                     10
-#define STRIP_TYPE              WS2811_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
-#define LED_COUNT 300
+#define STRIP_TYPE              WS2811_STRIP_GRB		// WS2812/SK6812RGB integrated chip+leds
+#define LED_COUNT 30
 
 
 bool Run = true;
@@ -90,7 +90,9 @@ void Update()
 {
 	for (int i = 0; i < LED_COUNT; i++)
 	{
-		Strip[i] = RGBVal(fmod(i/(LED_COUNT-1.0) + time(0)/500.0,1.0));
+		static double t = 0; t+= 0.001;
+		Strip[i] = RGBVal(fmod(i/(LED_COUNT-1.0) + t,1.0));
+		Strip[i] = 0;
 	}
 }
 
@@ -111,7 +113,7 @@ int main()
 	channel.gpionum = GPIO_PIN;
 	channel.count = LED_COUNT;
 	channel.invert = 0;
-	channel.brightness = 255;
+	channel.brightness = 55;
 	channel.strip_type = STRIP_TYPE;
 	ledstring.channel[0] = channel;
 	
