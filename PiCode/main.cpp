@@ -1,6 +1,24 @@
 
 #include <iostream>
+#include <stdint.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #include <ws2811.h>
+#include <math.h>
+
+#define MIN(a,b) ((a)<=(b)?(a):(b))
+#define MAX(a,b) ((a)>=(b)?(a):(b))
+
+typedef signed char i8;
+typedef signed short i16;
+typedef signed int i32;
+typedef signed long long i64;
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long long u64;
 
 inline double RedVal(double val)
 {
@@ -14,9 +32,9 @@ inline double BlueVal(double val)
 {
 	return val = 2.0-abs(6.0*val-4.0), val=MIN(val,1.0), MAX(val,0.0);
 }
-inline unsigned int RGBVal(ColourVal val)
+inline u32 RGBVal(double val)
 {		
-	return (u8)(255.0*RedVal(val.Colour)*val.Scale)<<16 | (u8)(255.0*GreenVal(val.Colour)*val.Scale)<<8 | (u8)(255.0*BlueVal(val.Colour)*val.Scale);
+	return (u8)(255.0*RedVal(val))<<16 | (u8)(255.0*GreenVal(val))<<8 | (u8)(255.0*BlueVal(val));
 }
 
 bool Run = true;
@@ -78,7 +96,7 @@ void Render()
 {
 	for (int i = 0; i < 300; i++)
 	{
-		ledstring.channel[0].leds[i] = matrix[i];
+		ledstring.channel[0].leds[i] = Strip[i];
 	}
 }
 
