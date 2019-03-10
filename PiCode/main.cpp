@@ -61,32 +61,8 @@ inline u32 RGBVal(double val)
 
 bool Run = true;
 ws2811_led_t Strip[LED_COUNT];
-extern "C"
-{
-	ws2811_t ledstring =
-	{
-		.freq = TARGET_FREQ,
-		.dmanum = DMA,
-		.channel =
-		{
-			[0] =
-			{
-				.gpionum = GPIO_PIN,
-				.count = LED_COUNT,
-				.invert = 0,
-				.brightness = 255,
-				.strip_type = STRIP_TYPE,
-			},
-			[1] =
-			{
-				.gpionum = 0,
-				.count = 0,
-				.invert = 0,
-				.brightness = 0,
-			},
-		},
-	};
-}
+
+ws2811_t ledstring;
 
 static void ctrl_c_handler(int signum)
 {
@@ -96,7 +72,8 @@ static void ctrl_c_handler(int signum)
 
 void setup_handlers()
 {
-	struct sigaction sa = { .sa_handler = ctrl_c_handler };
+	struct sigaction sa; //= { .sa_handler = ctrl_c_handler };
+	sa
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 }
@@ -127,6 +104,20 @@ void Render()
 
 int main()
 {
+	ledstring.freq = TARGET_FREQ;
+	ledstring.dmanum = DMA;
+	
+	ws2811_channel_t channel;
+	channel.gpionum = GPIO_PIN;
+	channel.count = LED_COUNT;
+	channel.invert = 0;
+	channel.brightness = 255;
+	channel.strip_type = STRIP_TYPE;
+	ledstring.channel =
+	{
+		channel, {}
+	};
+	
 	ws2811_return_t ret;
 	
 	
