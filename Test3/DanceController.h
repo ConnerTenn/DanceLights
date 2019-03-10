@@ -1,7 +1,20 @@
 
+
+#ifndef ENUM_STYLE
+#define ENUM_STYLE
+
+enum Style
+{
+	Fade, //Light
+	Streak, //Medium
+	StreakFade, //Heavy-medium
+	Pulse, //Heavy
+	FlipFlop,
+};
+
+#endif
+
 struct Cycle;
-struct Streak;
-struct Fade;
 class DanceController;
 
 #ifndef _DANCE_CONTROLLER_H_
@@ -11,78 +24,41 @@ class DanceController;
 #include "WindowController.h"
 #include "LightStrip.h"
 
-double Bistable(double x);
-double ASD(double x, double a, double s, double d);
-double ASDR(double x, double a, double s, double d, double r, double f);
+inline double Bistable(double x, double a)
+{
+	return x<0 ? 0 : (x<a && a!=0 ? x/a : 1);
+}
+//double ASD(double x, double a, double s, double d);
+//double ASDR(double x, double a, double s, double d, double r, double f);
 double RoundMean(double a, double b, double m, double w = 0.5);
 i8 RoundDirection(double a, double b, double m);
-RGB ColourMix(RGB a, RGB b, double w);
 
-struct Style
-{
-	//slide poly mash flip;    hold pulse, Fade, streak
-	bool Hold;
-	u8 Pulse; //Pulse can be controlled by streak
-	u8 Streak;
-	u8 Fade;
-	
-	u64 Speed; //used for streak
-	u64 Period;
-	u64 Offset;
-	u64 Align;
-	double Amplitude;
-	
-	double Colour;
-};
-
-/*struct TargetTracker
-{
-	int Current;
-	int Target;
-	int Speed;
-	bool Linear = true;
-	void Update();
-	void operator()();
-};*/
 
 struct Cycle
 {
-	u64 Period = 0;
-	u64 Align = 0;
+	double Period = 0;
+	i64 Align = 0;
 	
-	//bool SymmetricError = true;
-	//bool OncePerCycle = false;
 	bool ActOnPulseOn = false;
 	
 	Cycle(int len=1);
 	
-	u64 OnTime = 0, LastAccept = 0;
-	RoundBuffer<u64> PulseHist;
+	i64 OnTime = 0, LastAccept = 0;
+	RoundBuffer<i64> PulseHist;
 	bool PulseState = false;
-	void PulseOn(u64 time);
-	void PulseOff(u64 time);
-	void Pulse(u64 time);
+	void PulseOn(i64 time);
+	void PulseOff(i64 time);
+	void Pulse(i64 time);
 	
 	//bool Triggered = false;
-	bool operator()(u64 time, u64 error = 2, bool symmetricError = false, bool *latch = 0);
+	bool operator()(i64 time, double error = 1, bool symmetricError = false, bool *latch = 0);
 };
 
-struct Streak
+struct ColourTimestamp
 {
-	double Attack;
-	double Decay;
-	double Sustain;
-	u64 Align;
-	double Speed;
-	double Colour;
-};
-
-struct Fade
-{
-	double Target;
-	double Colour;
-	double Speed;
-	void Update(u64 now);
+	i64 Time;
+	i64 Attack;
+	ColourVal Colour;
 };
 
 class DanceController
@@ -91,26 +67,36 @@ public:
 	u8 StateIn[4];
 	u8 BeatIn;
 	
-	double UpdateFreq = 50;
-	u64 Start, Now;//, Last, Delta;
+	i64 Start, Now;//, Last, Delta;
 	
 	Cycle UpdateCycle, Beat, MulBeat;
-	bool HalfTime = false, DoubleTime = false;
+	int Speed = 0;
 	
 	RoundBuffer<Array<u8,5>> StateHist;
 	
-	std::vector<Streak> StreakList;
-	Fade ColourFade;
-	
 	std::vector<LightStrip> LightStripList;
 	
-	double PrimaryColour = RED;
+	std::vector<ColourTimestamp> ColourHist;
+	
+	int MajorWeight = 0;
+	//double MinorWeight = 0;
+	Style CurrStyle = Style::Fade, NextStyle = Style::Fade;
+	
+	bool Hold = false; 
+	i64 HoldAlign = 0, GlobalDelay = 0;
+	bool Manual = false, ForceUpdate = false;
+	
+	bool FlipFlop = false;
+	i64 Oldest = 0;
 	
 	DanceController();
 	
 	void Update();
 	void Draw(int xOff, int yOff);
 	
+	RGB GetColour(i64 now);
+	
+	ColourVal ColourPicker();
 };
 
 #endif

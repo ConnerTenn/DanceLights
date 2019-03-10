@@ -40,12 +40,32 @@ u64 GetNanoseconds();
 
 extern u64 StartTime;
 
+inline double mmod(double a, double m)
+{
+	return fmod(a, m) + (a<0?m:0);
+}
+
 struct RGB
 {
 	u_int8_t R;
 	u_int8_t G;
 	u_int8_t B;
 	u_int64_t XColour();
+};
+
+struct ColourVal
+{
+	double Colour;
+	double Scale;
+};
+
+struct HSLA
+{
+	double Hue;
+	double Saturation;
+	double Lightness;
+	double Amplitude;
+	RGB operator()();
 };
 
 #define RED (0.0)
@@ -55,13 +75,50 @@ struct RGB
 #define BLUE (4.0/6.0)
 #define MAGENTA (5.0/6.0)
 
-double OppCos(double x);
-double RedVal(double val);
-double GreenVal(double val);
-double BlueVal(double val);
-RGB ColourVal(double val);
-RGB ColourScale(RGB rgb, double scale);
-double mmod(double a, double m);
+//double OppCos(double x);
+inline double RedVal(double val)
+{
+	return val = 2.0-abs(6.0*(0.5-abs(val-0.5))), val=MIN(val,1.0), MAX(val,0.0);
+}
+inline double GreenVal(double val)
+{
+	return val = 2.0-abs(6.0*val-2.0), val=MIN(val,1.0), MAX(val,0.0);
+}
+inline double BlueVal(double val)
+{
+	return val = 2.0-abs(6.0*val-4.0), val=MIN(val,1.0), MAX(val,0.0);
+}
+inline RGB RGBVal(ColourVal val)
+{		
+	return RGB{(u8)(255.0*RedVal(val.Colour)*val.Scale),(u8)(255.0*GreenVal(val.Colour)*val.Scale),(u8)(255.0*BlueVal(val.Colour)*val.Scale)};
+}
+inline RGB RGBScale(RGB rgb, double scale)
+{
+	return RGB{ (u8)(scale*rgb.R), (u8)(scale*rgb.G), (u8)(scale*rgb.B) };
+}
+inline RGB ColourMix(RGB a, RGB b, double w)
+{
+	return {(u8)(a.R*(1.0-w) + b.R*(w)), (u8)(a.G*(1.0-w) + b.G*(w)), (u8)(a.B*(1.0-w) + b.B*(w))};
+}
+
+inline RGB RGBVal2(HSLA val)
+{
+	double c = (1.0-abs(2*val.Lightness-1))*val.Saturation;
+	double h = val.Hue*6.0;
+	double x = c*(1-abs(fmod(h,2)-1));
+	double a = val.Amplitude*255.0;
+	double r, g, b;
+	double m = val.Lightness-c/2.0;
+	     
+	if		(h <= 1.0) { r=c; g=x; b=0; }
+	else if	(h <= 2.0) { r=x; g=c; b=0; }
+	else if	(h <= 3.0) { r=0; g=c; b=x; }
+	else if	(h <= 4.0) { r=0; g=x; b=c; }
+	else if	(h <= 5.0) { r=x; g=0; b=c; }
+	else if	(h <= 6.0) { r=c; g=0; b=x; }
+	
+	return {(u8)((r+m)*a), (u8)((g+m)*a), (u8)((b+m)*a)};
+}
 
 template<class T, int N>
 struct Array

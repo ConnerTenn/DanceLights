@@ -10,16 +10,17 @@ class LightStrip
 {
 public:
 	
-	DynamicArray<RGB> Lights;
 	int Length;
-	bool VaryOverLength = true;
+	DynamicArray<RGB> Lights;
+	DynamicArray<i64> Delay;
 	
 	
 	LightStrip(int length);
 	LightStrip(const LightStrip &other);
 	
 	
-	void Update(u64 now, std::vector<Streak> *streakList, Fade *fade);//Style *style);
+	void Update(i64 now, DanceController *dance);//Style *style);
+	void UpdateDelays(Style style, double period, bool flipflop);
 	
 	void Draw(int X, int Y, int Direction);
 
