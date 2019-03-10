@@ -61,29 +61,32 @@ inline u32 RGBVal(double val)
 
 bool Run = true;
 ws2811_led_t Strip[LED_COUNT];
-ws2811_t ledstring =
+extern "C"
 {
-	.freq = TARGET_FREQ,
-	.dmanum = DMA,
-	.channel =
+	ws2811_t ledstring =
 	{
-		[0] =
+		.freq = TARGET_FREQ,
+		.dmanum = DMA,
+		.channel =
 		{
-			.gpionum = GPIO_PIN,
-			.count = LED_COUNT,
-			.invert = 0,
-			.brightness = 255,
-			.strip_type = STRIP_TYPE,
+			[0] =
+			{
+				.gpionum = GPIO_PIN,
+				.count = LED_COUNT,
+				.invert = 0,
+				.brightness = 255,
+				.strip_type = STRIP_TYPE,
+			},
+			[1] =
+			{
+				.gpionum = 0,
+				.count = 0,
+				.invert = 0,
+				.brightness = 0,
+			},
 		},
-		[1] =
-		{
-			.gpionum = 0,
-			.count = 0,
-			.invert = 0,
-			.brightness = 0,
-		},
-	},
-};
+	};
+}
 
 static void ctrl_c_handler(int signum)
 {
