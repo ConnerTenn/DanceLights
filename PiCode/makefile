@@ -9,12 +9,13 @@ IRPI_WS281X= ../../rpi_ws281x
 LRPI_WS281X= dma.o mailbox.o pcm.o pwm.o rpihw.o ws2811.o
 INCLUDE= $(IRPI_WS281X) 
 LIBS= -lpthread
-CFLAGS= -I $(INCLUDE) $(LRPI_WS281X:%.o=$(IRPI_WS281X)/%.o)  #-I ../libmad/ -I ../../PixelTerm
+OBJS= $(LRPI_WS281X:%.o=$(IRPI_WS281X)/%.o)
+CFLAGS= -I $(INCLUDE)  #-I ../libmad/ -I ../../PixelTerm
 
 all: program
 
 program: main.o
-	$(GPP) $(CFLAGS) $^ $(LIBS) $(LPIXTERM) -o $@
+	$(GPP) $(CFLAGS) $^ $(OBJS) $(LIBS) $(LPIXTERM) -o $@
 	
 main.o: main.cpp
 	$(GPP) $(CFLAGS) $< -c -o $@

@@ -60,7 +60,7 @@ inline u32 RGBVal(double val)
 
 
 bool Run = true;
-ws2811_led_t *Strip;
+ws2811_led_t Strip[LED_COUNT];
 
 ws2811_t ledstring;
 
@@ -90,7 +90,7 @@ void Update()
 {
 	for (int i = 0; i < LED_COUNT; i++)
 	{
-		Strip[i] = RGBVal(((i+time(0)/100)%LED_COUNT)/(LED_COUNT-1.0));
+		Strip[i] = RGBVal(fmod(i/(LED_COUNT-1.0) + time(0)/500.0,1.0));
 	}
 }
 
@@ -117,8 +117,6 @@ int main()
 	
 	ws2811_return_t ret;
 	
-	Strip = new ws2811_led_t[LED_COUNT];
-	
 	setup_handlers();
 	
 	if((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS)
@@ -137,7 +135,7 @@ int main()
 			std::cerr << "ws2811_render failed: " << ws2811_get_return_t_str(ret) << "\n";
 			break;
 		}
-
+		
 		// 15 frames /sec
 		usleep(1000000 / 15);
 	}
@@ -148,6 +146,8 @@ int main()
 	Clear();
 	Render();
 	ws2811_render(&ledstring);
+	
+	std::cout << "Cleared...\n";
 
 	ws2811_fini(&ledstring);
 	
