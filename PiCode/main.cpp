@@ -1,12 +1,27 @@
 
 #include <iostream>
+#include <math.h>
+
 #include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <getopt.h>
+
+
+#include <clk.h>
+#include <gpio.h>
+#include <dma.h>
+#include <pwm.h>
 
 #include <ws2811.h>
-#include <math.h>
 
 #define MIN(a,b) ((a)<=(b)?(a):(b))
 #define MAX(a,b) ((a)>=(b)?(a):(b))
@@ -36,6 +51,12 @@ inline u32 RGBVal(double val)
 {		
 	return (u8)(255.0*RedVal(val))<<16 | (u8)(255.0*GreenVal(val))<<8 | (u8)(255.0*BlueVal(val));
 }
+
+#define TARGET_FREQ             WS2811_TARGET_FREQ
+#define GPIO_PIN                18
+#define DMA                     10
+#define STRIP_TYPE              WS2811_STRIP_GBR		// WS2812/SK6812RGB integrated chip+leds
+
 
 bool Run = true;
 ws2811_led_t Strip[300];
@@ -88,7 +109,7 @@ void Update()
 {
 	for (int i = 0; i < 300; i++)
 	{
-		Strip[i] = RGBVal(((i+time()/100)%300)/(300.0-1.0));
+		Strip[i] = RGBVal(((i+time(0)/100)%300)/(300.0-1.0));
 	}
 }
 
