@@ -20,6 +20,7 @@ public:
 	
 	
 	void Update(i64 now, DanceController *dance);//Style *style);
+	void UpdateDelays(Style style, double period, bool flipflop);
 	
 	void Draw(int X, int Y, int Direction);
 

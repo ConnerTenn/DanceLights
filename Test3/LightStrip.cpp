@@ -29,6 +29,38 @@ void LightStrip::Update(i64 now, DanceController *dance)
 	}
 }
 
+void LightStrip::UpdateDelays(Style style, double period, bool flipflop)
+{
+	for (int i = 0; i < Length; i++)
+	{
+		i64 delay = 0;
+		
+		//fade
+		if (style == Style::Fade)
+		{
+			//delay = (i64)(period/100.0);
+		}
+		if (style == Style::Streak)
+		{
+			delay = i*(i64)(period/100.0);
+		}
+		if (style == Style::StreakFade)
+		{
+			delay = i*(i64)(period/100.0);
+		}
+		if (style == Style::Pulse)
+		{
+			//delay = (i64)(period/100.0);
+		}
+		if (style == Style::FlipFlop)
+		{
+			delay = flipflop ? i*(i64)(((period-period*0.6)*0.7)/Length) : 0;
+		}
+		
+		Delay[i] = delay;
+	}
+}
+
 void LightStrip::Draw(int xOff, int yOff, int direction)
 {
 	int x = xOff, y = yOff;

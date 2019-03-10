@@ -36,8 +36,26 @@ int main()
 				if (key == ' ') { Dance.BeatIn = 1; }
 				
 				if (key == 'q') { Dance.Beat.Period = 0; Dance.Beat.Align = 0; }
-				if (key == 'w') { Dance.HalfTime = true; }
-				if (key == 'e') { Dance.DoubleTime = true; }
+				
+				if (key == 'w') { Dance.Speed = -2; }
+				if (key == 'e') { Dance.Speed = -1; }
+				if (key == 'r') { Dance.Speed = 0; }
+				if (key == 't') { Dance.Speed = 1; }
+				if (key == 'y') { Dance.Speed = 2; }
+				
+				if (key == 'b') { Dance.MajorWeight = -1; }
+				if (key == 'n') { Dance.MajorWeight = 0; }
+				if (key == 'm') { Dance.MajorWeight = 1; }
+				
+				if (key == 'h') {Dance.NextStyle = Style::Pulse; }
+				if (key == 'j') {Dance.NextStyle = Style::StreakFade; }
+				if (key == 'k') {Dance.NextStyle = Style::Streak; }
+				if (key == 'l') {Dance.NextStyle = Style::Fade; }
+				if (key == 'g') {Dance.NextStyle = Style::FlipFlop; }
+				
+				if (key == 'a') { Dance.Hold = true; }
+				if (key == 's') { Dance.Manual = true; }
+				if (key == 'd') { Dance.ForceUpdate = true; }
 				
 				if (key == 65307) { run = false; }
 			}
@@ -51,8 +69,12 @@ int main()
 				if (key == 'p') { Dance.StateIn[3] = 0; }
 				if (key == ' ') { Dance.BeatIn = 0; }
 				
-				if (key == 'w') { Dance.HalfTime = false; }
-				if (key == 'e') { Dance.DoubleTime = false; }
+				/*if (key == 'w' && Dance.Speed == -2) { Dance.Speed = 0; }
+				if (key == 'e' && Dance.Speed == -1) { Dance.Speed = 0; }
+				if (key == 'r' && Dance.Speed == 1) { Dance.Speed = 0; }*/
+				
+				if (key == 'a') { Dance.Hold = false; }
+				if (key == 's') { Dance.Manual = false; }
 			}
 		}
 		
