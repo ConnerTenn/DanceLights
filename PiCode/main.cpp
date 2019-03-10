@@ -60,7 +60,7 @@ inline u32 RGBVal(double val)
 
 
 bool Run = true;
-ws2811_led_t Strip[LED_COUNT];
+ws2811_led_t *Strip;
 
 ws2811_t ledstring;
 
@@ -73,7 +73,7 @@ static void ctrl_c_handler(int signum)
 void setup_handlers()
 {
 	struct sigaction sa; //= { .sa_handler = ctrl_c_handler };
-	sa
+	sa.sa_handler = ctrl_c_handler;
 	sigaction(SIGINT, &sa, NULL);
 	sigaction(SIGTERM, &sa, NULL);
 }
@@ -113,14 +113,11 @@ int main()
 	channel.invert = 0;
 	channel.brightness = 255;
 	channel.strip_type = STRIP_TYPE;
-	ledstring.channel =
-	{
-		channel, {}
-	};
+	ledstring.channel[0] = channel;
 	
 	ws2811_return_t ret;
 	
-	
+	Strip = new ws2811_led_t[LED_COUNT];
 	
 	setup_handlers();
 	
@@ -152,7 +149,7 @@ int main()
 	Render();
 	ws2811_render(&ledstring);
 
-    ws2811_fini(&ledstring);
+	ws2811_fini(&ledstring);
 	
 	std::cout << "Done\n";
 
