@@ -7,20 +7,29 @@ GPP=g++ -Wall -std=c++17
 #LGPIO= -lwiringPi
 IRPI_WS281X= ../../rpi_ws281x
 LRPI_WS281X= dma.o mailbox.o pcm.o pwm.o rpihw.o ws2811.o
-INCLUDE= $(IRPI_WS281X) 
-LIBS= -lpthread -lm
+INCLUDE= $(IRPI_WS281X) ../../wiringPi
+LIBS= -lpthread -lm -lwiringPi
 OBJS= $(LRPI_WS281X:%.o=$(IRPI_WS281X)/%.o)
-CFLAGS= -I $(INCLUDE)  #-I ../libmad/ -I ../../PixelTerm
+CFLAGS= $(INCLUDE:%=-I %) -Wno-psabi #-I ../libmad/ -I ../../PixelTerm
 
 all: program
 
-program: main.o LEDController.o
+program: main.o LEDController.o DanceController.o LightStrip.o Globals.o
 	$(GPP) $(CFLAGS) $^ $(OBJS) $(LIBS) $(LPIXTERM) -o $@
 	
-main.o: main.cpp
+main.o: main.cpp Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
-LEDController.o: LEDController.cpp LEDController.h
+LEDController.o: LEDController.cpp LEDController.h Globals.h
+	$(GPP) $(CFLAGS) $< -c -o $@
+
+DanceController.o: DanceController.cpp DanceController.h Globals.h
+	$(GPP) $(CFLAGS) $< -c -o $@
+
+LightStrip.o: LightStrip.cpp LightStrip.h LightStrip.h Globals.h
+	$(GPP) $(CFLAGS) $< -c -o $@
+
+Globals.o: Globals.cpp Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
 force: clean all

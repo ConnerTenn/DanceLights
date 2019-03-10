@@ -34,11 +34,11 @@ typedef unsigned int u32;
 typedef unsigned long long u64;
 
 
-u64 GetMilliseconds();
-u64 GetMicroseconds();
-u64 GetNanoseconds();
+i64 GetMilliseconds();
+i64 GetMicroseconds();
+i64 GetNanoseconds();
 
-extern u64 StartTime;
+extern i64 StartTime;
 
 inline double mmod(double a, double m)
 {

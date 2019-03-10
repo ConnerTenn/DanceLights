@@ -67,3 +67,11 @@ bool LEDController::Render()
     return true;
 }
 
+void LEDController::Draw(LightStrip *strip, int channel, int offset)
+{
+    for (int i = 0; i < LedDef.channel[channel].count && i < strip->Length; i++)
+    {
+        LedDef.channel[channel].leds[i] = RGBToHEX(strip->Lights[i]);
+    }
+}
+

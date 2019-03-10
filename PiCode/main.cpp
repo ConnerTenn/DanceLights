@@ -1,4 +1,7 @@
 
+#include <wiringPi.h>
+#include "DanceController.h"
+#include "LightStrip.h"
 #include "LEDController.h"
 
 u32 RGBVal(double val)
@@ -9,22 +12,22 @@ u32 RGBVal(double val)
 
 bool Run = true;
 
-static void ctrl_c_handler(int signum)
+static void CloseHandler(int signum)
 {
-	(void)(signum);
 	Run = false;
 	std::cout<<"\n";
 }
 
-void setup_handlers()
+void SetupHandlers()
 {
-	struct sigaction sa;// = { .sa_handler = ctrl_c_handler };
+	struct sigaction sa;
 	memset(&sa, 0, sizeof(sa));
-	sa.sa_handler = ctrl_c_handler;
+	sa.sa_handler = CloseHandler;
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGTERM, &sa, NULL);
 }
 
+DanceController Dance;
 LEDController Controller;
 
 void Update()
@@ -38,34 +41,41 @@ void Update()
 
 int main()
 {
-	
-	printf("Setup Handlers\n");
+	SetupHandlers();
+	srand(StartTime);
 
-	setup_handlers();
 
 	printf("Init\n");
 	
-	if(!Controller.Init(300,0))
-	{
-		return 1;
-	}
+	wiringPiSetup();
+	wiringPiSetupGpio();
+	//pinMode(16, OUTPUT);
+	//digitalWrite(16, level); level=!level;
+
+	if(!Controller.Init(300,0)) { return 1; }
 
 	printf("Main Loop\n");
-	
+	i64 now = StartTime;
+	i64 maxTime = 0;
 	while (Run)
 	{
 		Update();
 		if (!Controller.Render()) { Run=false; }
-		
+
+		Dance.Update();		
 		// 15 frames /sec
-		usleep(1000000 / 15);
+		//usleep(1000000 / 15);
+
+		i64 delta = GetMicroseconds() - now;
+		now = GetMicroseconds();
+		maxTime = MAX(delta, maxTime);
+		static bool latch = false;
+		if ((now-StartTime) % 500'000 < 100'000) { if (!latch) { std::cout << "\r" << "Runtime:" << (now-StartTime)/1'000'000.0 << "  Frametime:" << delta/1'000'000.0 << "  Maxtime:" << maxTime/1'000'000.0 << std::flush; maxTime = 0; } latch = true; } else { latch = false; }
+
 	}
-	
-	printf("Exiting...\n");
 
 	Controller.Destroy();
 	
 	printf("Done\n");
-
 	return 0;
 }

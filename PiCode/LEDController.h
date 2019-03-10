@@ -3,6 +3,7 @@
 #define _LED_CONTROLLER_
 
 #include "Globals.h"
+#include "LightStrip.h"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -24,6 +25,10 @@
 
 #include <ws2811.h>
 
+inline u32 RGBToHEX(RGB val)
+{
+    return val.R<<16 | val.G<<8 | val.B;
+} 
 
 class LEDController
 {
@@ -37,6 +42,7 @@ public:
     void Clear();
     bool Render();
 
+    void Draw(LightStrip *strip, int channel, int offset);
 };
 
 #endif 
