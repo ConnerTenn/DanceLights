@@ -5,6 +5,7 @@ class LightStrip;
 #define _LIGHT_STRIP_H_
 
 #include "DanceController.h"
+#include <thread>
 
 class LightStrip
 {
@@ -19,9 +20,11 @@ public:
 	LightStrip();
 	LightStrip(int length, int stripOffset, int channel);
 	LightStrip(const LightStrip &other);
+	void operator=(const LightStrip &other);
+	~LightStrip();
 	
 	
-	void Update(i64 now, DanceController *dance);//Style *style);
+	void Update(i64 now, DanceController *dance);
 	void UpdateDelays(Style style, double period, bool flipflop);
 
 };

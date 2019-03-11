@@ -3,6 +3,7 @@
 #include "DanceController.h"
 #include "LightStrip.h"
 #include "LEDController.h"
+//#include <thread>
 
 u32 RGBVal(double val)
 {		
@@ -30,19 +31,21 @@ void SetupHandlers()
 DanceController Dance;
 LEDController Controller;
 
-void Update()
+void RenderThread()
 {
-	for (int i = 0; i < Controller.LedDef.channel[0].count; i++)
+	while (Run)
 	{
-		static double t = 0; t+= 0.0001;
-		Controller.LedDef.channel[0].leds[i] = RGBVal(fmod(i/(300-1.0) + t,1.0));
+		if (!Controller.Render()) { Run=false; }
 	}
 }
+
+
 
 i64 Time1, Time2;
 
 int main()
 {
+	std::thread renderThread;
 	SetupHandlers();
 	srand(StartTime);
 
@@ -54,7 +57,9 @@ int main()
 	//pinMode(16, OUTPUT);
 	//digitalWrite(16, level); level=!level;
 
-	if(!Controller.Init(120,0)) { return 1; }
+	if(!Controller.Init(300,0)) { return 1; }
+
+	renderThread = std::thread(RenderThread);
 
 	printf("Main Loop\n");
 	i64 now = StartTime;
@@ -62,17 +67,20 @@ int main()
 	while (Run)
 	{
 		//std::cout << "Start Loop\n";
-		//Update();
-		if (!Controller.Render()) { Run=false; }
 		//std::cout << "Render Done\n";
 
 		Dance.Update();
+		
 		//std::cout << "Update Done\n";
 		for (int i = 0; i < (int)Dance.LightStripList.size(); i++)
 		{
 			Controller.Draw(&Dance.LightStripList[i]);
 		}
 		//std::cout << "Draw Done\n";
+
+		//Time1 = GetMicroseconds();
+		//if (!Controller.Render()) { Run=false; }
+		//Time2 = GetMicroseconds();
 
 		i64 delta = GetMicroseconds() - now;
 		now = GetMicroseconds();
@@ -82,8 +90,10 @@ int main()
 
 	}
 
+	//renderThread.join();
+
 	Controller.Destroy();
 	
-	printf("Done\n");
+	printf("\nDone\n");
 	return 0;
 }
