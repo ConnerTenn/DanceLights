@@ -73,10 +73,8 @@ int main()
 		if (!Controller.Render()) { Run=false; }
 		//std::cout << "Render Done\n";
 
-		Time1 = GetMicroseconds();
 		Dance.Update();
 		//std::cout << "Update Done\n";
-		Time2 = GetMicroseconds();
 		for (int i = 0; i < (int)Dance.LightStripList.size(); i++)
 		{
 			Controller.Draw(&Dance.LightStripList[i]);
@@ -95,6 +93,6 @@ int main()
 
 	Controller.Destroy();
 	
-	printf("Done\n");
+	printf("\nDone\n");
 	return 0;
 }

@@ -5,6 +5,7 @@ class LightStrip;
 #define _LIGHT_STRIP_H_
 
 #include "DanceController.h"
+#include <thread>
 
 class LightStrip
 {
@@ -23,7 +24,7 @@ public:
 	~LightStrip();
 	
 	
-	void Update(i64 now, DanceController *dance);//Style *style);
+	void Update(i64 now, DanceController *dance);
 	void UpdateDelays(Style style, double period, bool flipflop);
 
 };

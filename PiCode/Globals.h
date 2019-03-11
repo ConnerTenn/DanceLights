@@ -129,7 +129,7 @@ struct Array
 	Array();
 	Array(std::initializer_list<T> list);
 	Array(Array<T, N> &other);
-	int size();
+	inline int size();
 	T &operator[](int i);
 	void Copy(Array<T, N> &other);
 };
@@ -147,7 +147,7 @@ public:
 	DynamicArray(const DynamicArray<T> &other);
 	~DynamicArray();
 	void Resize(int len);
-	int size();
+	inline int size();
 	T &operator[](int i);
 	void operator=(const DynamicArray<T> &other);
 	void Copy(DynamicArray<T> &other);
@@ -171,7 +171,7 @@ private:
 	int Transform(int i);
 	
 public:
-	int size();
+	inline int size();
 	void InsertBegin(T val);
 	
 	T &operator[](int i);
