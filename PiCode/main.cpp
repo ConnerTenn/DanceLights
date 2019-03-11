@@ -39,6 +39,8 @@ void Update()
 	}
 }
 
+i64 Time1, Time2;
+
 int main()
 {
 	SetupHandlers();
@@ -52,25 +54,31 @@ int main()
 	//pinMode(16, OUTPUT);
 	//digitalWrite(16, level); level=!level;
 
-	if(!Controller.Init(300,0)) { return 1; }
+	if(!Controller.Init(120,0)) { return 1; }
 
 	printf("Main Loop\n");
 	i64 now = StartTime;
 	i64 maxTime = 0;
 	while (Run)
 	{
-		Update();
+		//std::cout << "Start Loop\n";
+		//Update();
 		if (!Controller.Render()) { Run=false; }
+		//std::cout << "Render Done\n";
 
-		Dance.Update();		
-		// 15 frames /sec
-		//usleep(1000000 / 15);
+		Dance.Update();
+		//std::cout << "Update Done\n";
+		for (int i = 0; i < (int)Dance.LightStripList.size(); i++)
+		{
+			Controller.Draw(&Dance.LightStripList[i]);
+		}
+		//std::cout << "Draw Done\n";
 
 		i64 delta = GetMicroseconds() - now;
 		now = GetMicroseconds();
 		maxTime = MAX(delta, maxTime);
 		static bool latch = false;
-		if ((now-StartTime) % 500'000 < 100'000) { if (!latch) { std::cout << "\r" << "Runtime:" << (now-StartTime)/1'000'000.0 << "  Frametime:" << delta/1'000'000.0 << "  Maxtime:" << maxTime/1'000'000.0 << std::flush; maxTime = 0; } latch = true; } else { latch = false; }
+		if ((now-StartTime) % 100'000 < 50'000) { if (!latch) { std::cout << "\r" << "Runtime:" << std::to_string((now-StartTime)/1'000'000.0) << "  Frametime:" << std::to_string(delta/1'000'000.0) << "  Maxtime:" << std::to_string(maxTime/1'000'000.0) << "  Measure:" << std::to_string((Time2-Time1)/1'000'000.0) << std::flush; maxTime = 0; } latch = true; } else { latch = false; }
 
 	}
 

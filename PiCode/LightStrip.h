@@ -11,11 +11,13 @@ class LightStrip
 public:
 	
 	int Length;
+	int StripOffset;
+	int Channel;
 	DynamicArray<RGB> Lights;
 	DynamicArray<i64> Delay;
 	
-	
-	LightStrip(int length);
+	LightStrip();
+	LightStrip(int length, int stripOffset, int channel);
 	LightStrip(const LightStrip &other);
 	
 	

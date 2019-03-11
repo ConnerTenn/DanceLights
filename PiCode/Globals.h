@@ -39,6 +39,7 @@ i64 GetMicroseconds();
 i64 GetNanoseconds();
 
 extern i64 StartTime;
+extern i64 Time1, Time2;
 
 inline double mmod(double a, double m)
 {

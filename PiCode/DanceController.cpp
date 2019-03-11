@@ -132,12 +132,19 @@ DanceController::DanceController() :
 	UpdateCycle.Align = StartTime;
 	//Beat.Align = StartTime;
 	Beat.ActOnPulseOn = true;
+	Beat.Period = 400;
 	
-	
-	LightStripList.push_back(LightStrip(50));
-	LightStripList.push_back(LightStrip(70));
-	LightStripList.push_back(LightStrip(110));
+	LightStripList.push_back(LightStrip(120,0,0));
+	//LightStripList.push_back(LightStrip(30,0,0));
+	//LightStripList.push_back(LightStrip(30,30,0));
+	//LightStripList.push_back(LightStrip(30,60,0));
+	//LightStripList.push_back(LightStrip(30,90,0));
+	//LightStripList.push_back(LightStrip(70,0,0));
+	//LightStripList.push_back(LightStrip(110,0,0));
 	//Last=Start;
+
+	NextStyle = Style::Streak;
+	MajorWeight = 1;
 }
 
 void DanceController::Update()
@@ -166,7 +173,7 @@ void DanceController::Update()
 	static bool beatLatch = false;
 	static double lastPeriod = 0;
 	bool updateDelays = false;
-	if (!Hold && ((MulBeat(Now, UpdateCycle.Period/4, false, &beatLatch) && !Manual) || ForceUpdate))
+	if (!Hold && ((MulBeat(Now, UpdateCycle.Period/1.5, false, &beatLatch) && !Manual) || ForceUpdate))
 	{
 		if (CurrStyle != NextStyle)
 		{
@@ -194,7 +201,7 @@ void DanceController::Update()
 			timestamp.Colour = ColourPicker();
 			ColourHist.push_back(timestamp);
 		}
-		if (CurrStyle == Style::Streak || (CurrStyle == Style::FlipFlop && !FlipFlop))
+		else if (CurrStyle == Style::Streak || (CurrStyle == Style::FlipFlop && !FlipFlop))
 		{
 			timestamp.Time = Now;
 			timestamp.Attack = MulBeat.Period*attack;
@@ -204,16 +211,16 @@ void DanceController::Update()
 			timestamp.Attack = MulBeat.Period*decay;
 			timestamp.Colour = { 0.0, 0.0 };
 			ColourHist.push_back(timestamp);
-			if (CurrStyle == Style::FlipFlop) { Oldest = Now; }
+			//if (CurrStyle == Style::FlipFlop) { Oldest = Now; }
 		}
-		if (CurrStyle == Style::StreakFade)
+		else if (CurrStyle == Style::StreakFade)
 		{
 			timestamp.Time = Now;
 			timestamp.Attack = MulBeat.Period*attack;
 			timestamp.Colour = ColourPicker();
 			ColourHist.push_back(timestamp);
 		}
-		if (CurrStyle == Style::Pulse || (CurrStyle == Style::FlipFlop && FlipFlop))
+		else if (CurrStyle == Style::Pulse || (CurrStyle == Style::FlipFlop && FlipFlop))
 		{
 			timestamp.Time = Now;
 			timestamp.Attack = MulBeat.Period*attack;
@@ -256,14 +263,14 @@ void DanceController::Update()
 	}
 }
 
-RGB DanceController::GetColour(i64 now)
+/*RGB DanceController::GetColour(i64 now)
 {
 	RGB colour = {0,0,0};
-	if (now < Oldest) { return colour; }
+	//if (now < Oldest) { return colour; }
 	
-	int i = 0;
 	int max=ColourHist.size();
-	for (i=max-1; i>=0 && ColourHist[i].Time > now; i--) { }
+	int i = max-1;
+	for (; i>=0 && ColourHist[i].Time > now; i--) { }
 	if (max)
 	{
 		double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
@@ -271,7 +278,7 @@ RGB DanceController::GetColour(i64 now)
 	}
 	
 	return colour;
-}
+}*/
 
 
 ColourVal DanceController::ColourPicker()

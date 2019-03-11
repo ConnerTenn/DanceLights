@@ -17,16 +17,16 @@ all: program
 program: main.o LEDController.o DanceController.o LightStrip.o Globals.o
 	$(GPP) $(CFLAGS) $^ $(OBJS) $(LIBS) $(LPIXTERM) -o $@
 	
-main.o: main.cpp Globals.h
+main.o: main.cpp LightStrip.h DanceController.h Globals.h Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
-LEDController.o: LEDController.cpp LEDController.h Globals.h
+LEDController.o: LEDController.cpp LEDController.h LightStrip.h Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
 DanceController.o: DanceController.cpp DanceController.h Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
-LightStrip.o: LightStrip.cpp LightStrip.h LightStrip.h Globals.h
+LightStrip.o: LightStrip.cpp LightStrip.h LightStrip.h DanceController.h Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
 Globals.o: Globals.cpp Globals.h

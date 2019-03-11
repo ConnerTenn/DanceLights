@@ -86,13 +86,28 @@ public:
 	bool Manual = false, ForceUpdate = false;
 	
 	bool FlipFlop = false;
-	i64 Oldest = 0;
+	//i64 Oldest = 0;
 	
 	DanceController();
 	
 	void Update();
 	
-	RGB GetColour(i64 now);
+	inline RGB GetColour(i64 now)
+	{
+		RGB colour = {0,0,0};
+		//if (now < Oldest) { return colour; }
+		
+		int max=ColourHist.size();
+		int i = max-1;
+		for (; i>=0 && ColourHist[i].Time > now; i--) { }
+		if (max)
+		{
+			double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
+			colour = ColourMix(i == 0 ? colour : RGBVal(ColourHist[i-1].Colour), RGBVal(ColourHist[i].Colour), mix);
+		}
+		
+		return colour;
+	}
 	
 	ColourVal ColourPicker();
 };

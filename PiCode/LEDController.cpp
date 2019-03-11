@@ -67,11 +67,13 @@ bool LEDController::Render()
     return true;
 }
 
-void LEDController::Draw(LightStrip *strip, int channel, int offset)
+void LEDController::Draw(LightStrip *strip)
 {
-    for (int i = 0; i < LedDef.channel[channel].count && i < strip->Length; i++)
+    int max = MIN(LedDef.channel[strip->Channel].count-strip->StripOffset, strip->Length);
+    ws2811_led_t *leds = LedDef.channel[strip->Channel].leds;
+    for (int i = 0; i < max; i++)
     {
-        LedDef.channel[channel].leds[i] = RGBToHEX(strip->Lights[i]);
+        leds[i+strip->StripOffset] = RGBToHEX(strip->Lights[i]);
     }
 }
 
