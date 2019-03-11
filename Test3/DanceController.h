@@ -24,10 +24,6 @@ class DanceController;
 #include "WindowController.h"
 #include "LightStrip.h"
 
-inline double Bistable(double x, double a)
-{
-	return x<0 ? 0 : (x<a && a!=0 ? x/a : 1);
-}
 //double ASD(double x, double a, double s, double d);
 //double ASDR(double x, double a, double s, double d, double r, double f);
 double RoundMean(double a, double b, double m, double w = 0.5);
@@ -58,7 +54,7 @@ struct ColourTimestamp
 {
 	i64 Time;
 	i64 Attack;
-	ColourVal Colour;
+	RGB Colour;
 };
 
 class DanceController
@@ -74,7 +70,7 @@ public:
 	
 	RoundBuffer<Array<u8,5>> StateHist;
 	
-	std::vector<LightStrip> LightStripList;
+	DynamicArray<LightStrip> LightStripList;
 	
 	std::vector<ColourTimestamp> ColourHist;
 	
@@ -87,16 +83,31 @@ public:
 	bool Manual = false, ForceUpdate = false;
 	
 	bool FlipFlop = false;
-	i64 Oldest = 0;
+	//i64 Oldest = 0;
 	
 	DanceController();
 	
 	void Update();
 	void Draw(int xOff, int yOff);
 	
-	RGB GetColour(i64 now);
+	inline RGB GetColour(i64 now)
+	{
+		RGB colour = {0,0,0};
+		//if (now < Oldest) { return colour; }
+		
+		int max=ColourHist.size();
+		int i = max-1;
+		for (; i>0 && ColourHist[i].Time > now; i--) { }
+		if (max)
+		{
+			double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
+			colour = ColourMix(i == 0 ? colour : ColourHist[i-1].Colour, ColourHist[i].Colour, mix);
+		}
+		
+		return colour;
+	}
 	
-	ColourVal ColourPicker();
+	RGB ColourPicker();
 };
 
 #endif

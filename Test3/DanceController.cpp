@@ -67,7 +67,7 @@ void Cycle::Pulse(i64 t)
 	{
 		u16 count = 0;
 		double newFreq = 0; count = 0;
-		for (int i = 0; i < PulseHist.Size()-1; i++)
+		for (int i = 0; i < PulseHist.size()-1; i++)
 		{
 			if (PulseHist[i]-PulseHist[i+1]<MAX(1000,Period*5))// || t-LastAccept>=2000)
 			{
@@ -76,12 +76,12 @@ void Cycle::Pulse(i64 t)
 				LastAccept=t;
 				count++;
 			}
-			else { i=PulseHist.Size(); }
+			else { i=PulseHist.size(); }
 		}
 		if (count) { Period = newFreq / count; }
 		
 		i64 newAlign = 0; count = 0;
-		for (int i = 0; i < PulseHist.Size()-1; i++)
+		for (int i = 0; i < PulseHist.size()-1; i++)
 		{
 			//if (PulseHist[i-1]-PulseHist[i]<Period*3)
 			i64 q = (PulseHist[0]-Align-Period/2.0)/Period+1.0;
@@ -92,7 +92,7 @@ void Cycle::Pulse(i64 t)
 				newAlign += (PulseHist[i]-Align-Period/2)+Align-Period/2-q*Period-i*Period;
 				count++;
 			}
-			else { i=PulseHist.Size(); }
+			else { i=PulseHist.size(); }
 			//std::cout << "    Diff: " << (i64)((i64)PulseHist[i]-(i64)PulseHist[i+1]) << "    DiffDiff: " << ABS(((i64)PulseHist[i]-(i64)PulseHist[i+1])-(i64)Period) << "\n";
 		}
 		Align = newAlign / count;
@@ -125,19 +125,26 @@ bool Cycle::operator()(i64 t, double error, bool symmetricError, bool *latch)
 
 
 DanceController::DanceController() : 
-		UpdateCycle(), Beat(4), StateHist(120)
+		UpdateCycle(), Beat(4), StateHist(120), LightStripList(1)
 {
 	Start = GetMilliseconds();
 	UpdateCycle.Period = 20;
 	UpdateCycle.Align = StartTime;
 	//Beat.Align = StartTime;
 	Beat.ActOnPulseOn = true;
+	Beat.Period = 400;
 	
-	
-	LightStripList.push_back(LightStrip(50));
-	LightStripList.push_back(LightStrip(70));
-	LightStripList.push_back(LightStrip(110));
+	LightStripList[0]=(LightStrip(100,0,0));
+	//LightStripList.push_back(LightStrip(30,0,0));
+	//LightStripList.push_back(LightStrip(30,30,0));
+	//LightStripList.push_back(LightStrip(30,60,0));
+	//LightStripList.push_back(LightStrip(30,90,0));
+	//LightStripList.push_back(LightStrip(70,0,0));
+	//LightStripList.push_back(LightStrip(110,0,0));
 	//Last=Start;
+
+	NextStyle = Style::Streak;
+	MajorWeight = 1;
 }
 
 void DanceController::Update()
@@ -147,14 +154,14 @@ void DanceController::Update()
 	//Delta = Now - Last;
 	//if (Delta > (u64)(1000/UpdateFreq))
 	static bool updateLatch = false;
-	if (UpdateCycle(Now, UpdateCycle.Period/4, false, &updateLatch))
+	if (UpdateCycle(Now, UpdateCycle.Period/2, false, &updateLatch))
 	{
 		//u8 temp[5] = {StateIn[0],StateIn[1],StateIn[2],StateIn[3],BeatIn};
 		StateHist.InsertBegin({StateIn[0],StateIn[1],StateIn[2],StateIn[3],BeatIn});
+		
+		if (BeatIn) { Beat.PulseOn(Now); }
+		else { Beat.PulseOff(Now); }
 	}
-	
-	if (StateHist[0][4]) { Beat.PulseOn(Now); }
-	else { Beat.PulseOff(Now); }
 	
 	if (Speed == -1) { MulBeat.Period = Beat.Period*2; }
 	else if (Speed == 1) { MulBeat.Period = Beat.Period/2; }
@@ -166,7 +173,7 @@ void DanceController::Update()
 	static bool beatLatch = false;
 	static double lastPeriod = 0;
 	bool updateDelays = false;
-	if (!Hold && ((MulBeat(Now, UpdateCycle.Period/4, false, &beatLatch) && !Manual) || ForceUpdate))
+	if (!Hold && ((MulBeat(Now, UpdateCycle.Period/1.5, false, &beatLatch) && !Manual) || ForceUpdate))
 	{
 		if (CurrStyle != NextStyle)
 		{
@@ -202,11 +209,11 @@ void DanceController::Update()
 			ColourHist.push_back(timestamp);
 			timestamp.Time = Now+MulBeat.Period*attack;
 			timestamp.Attack = MulBeat.Period*decay;
-			timestamp.Colour = { 0.0, 0.0 };
+			timestamp.Colour = { 0,0,0 };
 			ColourHist.push_back(timestamp);
-			if (CurrStyle == Style::FlipFlop) { Oldest = Now; }
+			//if (CurrStyle == Style::FlipFlop) { Oldest = Now; }
 		}
-		if (CurrStyle == Style::StreakFade)
+		else if (CurrStyle == Style::StreakFade)
 		{
 			timestamp.Time = Now;
 			timestamp.Attack = MulBeat.Period*attack;
@@ -221,7 +228,7 @@ void DanceController::Update()
 			ColourHist.push_back(timestamp);
 			timestamp.Time = Now+MulBeat.Period*attack;
 			timestamp.Attack = MulBeat.Period*decay;
-			timestamp.Colour = { 0.0, 0.0 };
+			timestamp.Colour = { 0,0,0 };
 			ColourHist.push_back(timestamp);
 		}
 		
@@ -273,7 +280,7 @@ void DanceController::Draw(int xOff, int yOff)
 	//DrawRectangle(10*MinorWeight+100+xOff, 15+yOff, 10, 10, RGB{255,255,255});
 	
 	//Draw StateIn Hist
-	for (int i = 0; i < StateHist.Size(); i++)
+	for (int i = 0; i < StateHist.size(); i++)
 	{
 		//Calculated Beat Cycle
 		if (Beat(Now - i*UpdateCycle.Period, UpdateCycle.Period))
@@ -296,10 +303,10 @@ void DanceController::Draw(int xOff, int yOff)
 		//OutlineRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255});
 		if(StateHist[i][4]) { DrawRectangle(xOff+10, 10*i+yOff+35, 20, 10, RGB{255,255,255}); }
 	}
-	OutlineRectangle(xOff+10-10, yOff+35, 20+4*10+20, 10*StateHist.Size(), RGB{255,255,255});
+	OutlineRectangle(xOff+10-10, yOff+35, 20+4*10+20, 10*StateHist.size(), RGB{255,255,255});
 	
-	DrawText(xOff+10, StateHist.Size()*10+20+yOff+35, "Beat Period:" + std::to_string(Beat.Period) + "   Beat Align:" + std::to_string(Beat.Align), {255,255,255});
-	DrawText(xOff+10, StateHist.Size()*10+20+yOff+55, "MulBeat Period:" + std::to_string(MulBeat.Period) + "   MulBeat Align:" + std::to_string(MulBeat.Align), {255,255,255});
+	DrawText(xOff+10, StateHist.size()*10+20+yOff+35, "Beat Period:" + std::to_string(Beat.Period) + "   Beat Align:" + std::to_string(Beat.Align), {255,255,255});
+	DrawText(xOff+10, StateHist.size()*10+20+yOff+55, "MulBeat Period:" + std::to_string(MulBeat.Period) + "   MulBeat Align:" + std::to_string(MulBeat.Align), {255,255,255});
 	
 	//Draw Light Strips
 	DrawText(xOff+170, yOff+80, "Timestamp Count:" + std::to_string(ColourHist.size()), {255,255,255});
@@ -314,14 +321,14 @@ void DanceController::Draw(int xOff, int yOff)
 	
 }
 
-RGB DanceController::GetColour(i64 now)
+/*RGB DanceController::GetColour(i64 now)
 {
 	RGB colour = {0,0,0};
-	if (now < Oldest) { return colour; }
+	//if (now < Oldest) { return colour; }
 	
-	int i = 0;
 	int max=ColourHist.size();
-	for (i=max-1; i>=0 && ColourHist[i].Time > now; i--) { }
+	int i = max-1;
+	for (; i>=0 && ColourHist[i].Time > now; i--) { }
 	if (max)
 	{
 		double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
@@ -329,10 +336,10 @@ RGB DanceController::GetColour(i64 now)
 	}
 	
 	return colour;
-}
+}*/
 
 
-ColourVal DanceController::ColourPicker()
+RGB DanceController::ColourPicker()
 {
 	static ColourVal last = {0,0};
 	ColourVal choice;
@@ -355,6 +362,5 @@ ColourVal DanceController::ColourPicker()
 	choice.Scale = 1.0;
 	
 	last = choice;
-	
-	return choice;
+	return RGBScale(RGBVal(choice), 1);
 }

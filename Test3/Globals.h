@@ -34,11 +34,11 @@ typedef unsigned int u32;
 typedef unsigned long long u64;
 
 
-u64 GetMilliseconds();
-u64 GetMicroseconds();
-u64 GetNanoseconds();
+i64 GetMilliseconds();
+i64 GetMicroseconds();
+i64 GetNanoseconds();
 
-extern u64 StartTime;
+extern i64 StartTime;
 
 inline double mmod(double a, double m)
 {
@@ -98,7 +98,17 @@ inline RGB RGBScale(RGB rgb, double scale)
 }
 inline RGB ColourMix(RGB a, RGB b, double w)
 {
-	return {(u8)(a.R*(1.0-w) + b.R*(w)), (u8)(a.G*(1.0-w) + b.G*(w)), (u8)(a.B*(1.0-w) + b.B*(w))};
+	double iw = 1.0-w;
+	return {(u8)(a.R*iw + b.R*w), (u8)(a.G*iw + b.G*w), (u8)(a.B*iw + b.B*w)};
+}
+inline RGB ColourMixInt(RGB a, RGB b, i32 w)
+{
+	double iw = 1000-w;
+	return {(u8)((a.R*iw + b.R*w)/1000), (u8)((a.G*iw + b.G*w)/1000), (u8)((a.B*iw + b.B*w)/1000)};
+}
+inline double Bistable(double x, double a)
+{
+	return x<0 ? 0 : (x<a && a!=0 ? x/a : 1);
 }
 
 inline RGB RGBVal2(HSLA val)
@@ -120,6 +130,7 @@ inline RGB RGBVal2(HSLA val)
 	return {(u8)((r+m)*a), (u8)((g+m)*a), (u8)((b+m)*a)};
 }
 
+
 template<class T, int N>
 struct Array
 {
@@ -128,7 +139,7 @@ struct Array
 	Array();
 	Array(std::initializer_list<T> list);
 	Array(Array<T, N> &other);
-	int Size();
+	inline int size();
 	T &operator[](int i);
 	void Copy(Array<T, N> &other);
 };
@@ -143,10 +154,12 @@ public:
 public:
 	DynamicArray(int len);
 	DynamicArray(std::initializer_list<T> list);
-	DynamicArray(DynamicArray<T> &other);
+	DynamicArray(const DynamicArray<T> &other);
 	~DynamicArray();
-	int Size();
+	void Resize(int len);
+	inline int size();
 	T &operator[](int i);
+	void operator=(const DynamicArray<T> &other);
 	void Copy(DynamicArray<T> &other);
 };
 
@@ -168,7 +181,7 @@ private:
 	int Transform(int i);
 	
 public:
-	int Size();
+	inline int size();
 	void InsertBegin(T val);
 	
 	T &operator[](int i);
@@ -196,7 +209,7 @@ Array<T,N>::Array(Array<T, N> &other)
 }
 
 template<class T, int N>
-int Array<T,N>::Size() { return N; }
+int Array<T,N>::size() { return N; }
 
 template<class T, int N>
 T &Array<T,N>::operator[](int i) { return Values[i]; }
@@ -214,6 +227,7 @@ template<class T>
 DynamicArray<T>::DynamicArray(int len) :
 	Length(len)
 {
+	//std::cout << "DynamicArray:New Len" << len << "\n";
 	Values = new T[len];
 }
 
@@ -225,28 +239,43 @@ DynamicArray<T>::DynamicArray(std::initializer_list<T> list)
 }
 
 template<class T>
-DynamicArray<T>::DynamicArray(DynamicArray<T> &other)
+DynamicArray<T>::DynamicArray(const DynamicArray<T> &other)
 {
-	DynamicArray(other.Size());
+	//std::cout << "DynamicArray:Copy\n";
+	DynamicArray(other.size());
 	for (int i = 0; i < Length; i++) { Values[i] = other[i]; }
 }
-
 template<class T>
 DynamicArray<T>::~DynamicArray()
 {
+	//std::cout<<"DynamicArray:Delete "<<Length<<"\n";
 	delete[] Values;
+}
+template<class T>
+void DynamicArray<T>::Resize(int len)
+{
+	delete[] Values;
+	Values = new T[len];
 }
 
 template<class T>
-int DynamicArray<T>::Size() { return Length; }
+int DynamicArray<T>::size() { return Length; }
 
 template<class T>
 T &DynamicArray<T>::operator[](int i) { return Values[i]; }
 
 template<class T>
+void DynamicArray<T>::operator=(const DynamicArray<T> &other)
+{
+	Length = other.Length;
+	Resize(Length);
+	for (int i = 0; i < Length; i++) { Values[i] = other.Values[i]; }
+}
+
+template<class T>
 void DynamicArray<T>::Copy(DynamicArray<T> &other)
 {
-	DynamicArray(other.Size());
+	DynamicArray(other.size());
 	for (int i = 0; i < Length; i++) { Values[i] = other[i]; }
 }
 
@@ -273,7 +302,7 @@ RoundBuffer<T>::~RoundBuffer()
 }
 
 template<class T>
-int RoundBuffer<T>::Size() { return Length; }
+int RoundBuffer<T>::size() { return Length; }
 
 template<class T>
 int RoundBuffer<T>::Transform(int i) 

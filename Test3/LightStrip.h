@@ -6,20 +6,26 @@ class LightStrip;
 
 #include "DanceController.h"
 
+
 class LightStrip
 {
 public:
 	
 	int Length;
+	int StripOffset;
+	int Channel;
 	DynamicArray<RGB> Lights;
 	DynamicArray<i64> Delay;
 	
 	
-	LightStrip(int length);
+	LightStrip();
+	LightStrip(int length, int stripOffset, int channel);
 	LightStrip(const LightStrip &other);
+	void operator=(const LightStrip &other);
+	~LightStrip();
 	
 	
-	void Update(i64 now, DanceController *dance);//Style *style);
+	void Update(i64 now, DanceController *dance);
 	void UpdateDelays(Style style, double period, bool flipflop);
 	
 	void Draw(int X, int Y, int Direction);
