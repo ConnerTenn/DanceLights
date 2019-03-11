@@ -22,6 +22,7 @@ class DanceController;
 
 #include "Globals.h"
 #include "WindowController.h"
+//#include "LightContainer.h"
 #include "LightStrip.h"
 
 //double ASD(double x, double a, double s, double d);
@@ -70,7 +71,7 @@ public:
 	
 	RoundBuffer<Array<u8,5>> StateHist;
 	
-	DynamicArray<LightStrip> LightStripList;
+	DynamicArray<LightContainer *> LightStripList;
 	
 	std::vector<ColourTimestamp> ColourHist;
 	
@@ -86,6 +87,7 @@ public:
 	//i64 Oldest = 0;
 	
 	DanceController();
+	~DanceController();
 	
 	void Update();
 	void Draw(int xOff, int yOff);

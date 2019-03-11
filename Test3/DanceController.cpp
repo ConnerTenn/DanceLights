@@ -134,7 +134,7 @@ DanceController::DanceController() :
 	Beat.ActOnPulseOn = true;
 	Beat.Period = 400;
 	
-	LightStripList[0]=(LightStrip(100,0,0));
+	LightStripList[0]= new LightStrip(100,0,0);
 	//LightStripList.push_back(LightStrip(30,0,0));
 	//LightStripList.push_back(LightStrip(30,30,0));
 	//LightStripList.push_back(LightStrip(30,60,0));
@@ -145,6 +145,14 @@ DanceController::DanceController() :
 
 	NextStyle = Style::Streak;
 	MajorWeight = 1;
+}
+DanceController::~DanceController()
+{
+	for (int i = 0; i < LightStripList.size(); i++)
+	{
+		delete LightStripList[i];
+		LightStripList[i] = 0;
+	}
 }
 
 void DanceController::Update()
@@ -249,8 +257,8 @@ void DanceController::Update()
 	
 	for (i64 i = 0; i < (i64)LightStripList.size(); i++)
 	{
-		if (updateDelays) { LightStripList[i].UpdateDelays(CurrStyle, MulBeat.Period, FlipFlop); }
-		LightStripList[i].Update(Now/*-i*50*/, this);
+		if (updateDelays) { LightStripList[i]->UpdateDelays(CurrStyle, MulBeat.Period, FlipFlop); }
+		LightStripList[i]->Update(Now/*-i*50*/, this);
 	}
 	
 	for (i64 i = 0; i < (i64)ColourHist.size();)
@@ -312,11 +320,11 @@ void DanceController::Draw(int xOff, int yOff)
 	DrawText(xOff+170, yOff+80, "Timestamp Count:" + std::to_string(ColourHist.size()), {255,255,255});
 	for (int i = 0; i < (int)LightStripList.size(); i++)
 	{
-		for (int j = 0; j < LightStripList[i].Length; j++)
+		for (int j = 0; j < LightStripList[i]->Length; j++)
 		{
-			DrawRectangle(xOff + 170 + j*20, yOff + 100 + i*40, 20, 20, LightStripList[i].Lights[j]);
+			DrawRectangle(xOff + 170 + j*20, yOff + 100 + i*40, 20, 20, LightStripList[i]->Lights[j]);
 		}
-		OutlineRectangle(xOff + 170, yOff + 100 + i*40, 20*LightStripList[i].Length, 20, {255,255,255});
+		OutlineRectangle(xOff + 170, yOff + 100 + i*40, 20*LightStripList[i]->Length, 20, {255,255,255});
 	}
 	
 }

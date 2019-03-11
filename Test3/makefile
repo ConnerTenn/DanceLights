@@ -9,7 +9,7 @@ CFLAGS = -O3#-I ../libmad/ -I ../../PixelTerm
 
 all: program
 
-program: main.o LightStrip.o DanceController.o WindowController.o Globals.o
+program: main.o LightStrip.o LightMatrix.o LightContainer.o DanceController.o WindowController.o Globals.o
 	$(GPP) $(CFLAGS) $^ $(LIBS) $(LXTERMLIBS) -o $@
 	
 WindowController.o: WindowController.cpp WindowController.h
@@ -19,6 +19,12 @@ main.o: main.cpp Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 	
 LightStrip.o: LightStrip.cpp LightStrip.h Globals.h
+	$(GPP) $(CFLAGS) $< -c -o $@
+
+LightMatrix.o: LightMatrix.cpp LightMatrix.h Globals.h
+	$(GPP) $(CFLAGS) $< -c -o $@
+	
+LightContainer.o: LightContainer.cpp LightContainer.h Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 	
 DanceController.o: DanceController.cpp DanceController.h Globals.h
