@@ -10,7 +10,7 @@ LRPI_WS281X= dma.o mailbox.o pcm.o pwm.o rpihw.o ws2811.o
 INCLUDE= $(IRPI_WS281X) ../../wiringPi
 LIBS= -lpthread -lm -lwiringPi
 OBJS= $(LRPI_WS281X:%.o=$(IRPI_WS281X)/%.o)
-CFLAGS= $(INCLUDE:%=-I %) -Wno-psabi #-I ../libmad/ -I ../../PixelTerm
+CFLAGS= $(INCLUDE:%=-I %) -Wno-psabi -g #-I ../libmad/ -I ../../PixelTerm
 
 all: program
 

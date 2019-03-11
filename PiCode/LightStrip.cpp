@@ -23,7 +23,6 @@ LightStrip::LightStrip(int length, int stripOffset, int channel) :
 LightStrip::LightStrip(const LightStrip &other) :
 		Length(other.Length), Lights(Length), Delay(Length)
 {
-
 	StripOffset = other.StripOffset;
 	Channel = other.Channel;
 	for (int i = 0; i < Length; i++)
@@ -31,6 +30,17 @@ LightStrip::LightStrip(const LightStrip &other) :
 		Lights[i] = other.Lights.Values[i];
 		Delay[i] = other.Delay.Values[i];
 	}
+}
+void LightStrip::operator=(const LightStrip &other)
+{
+	Length = other.Length;
+	Lights = other.Lights;
+	Delay = other.Delay;
+	StripOffset = other.StripOffset;
+	Channel = other.Channel;
+}
+LightStrip::~LightStrip()
+{
 }
 
 void LightStrip::Update(i64 now, DanceController *dance)

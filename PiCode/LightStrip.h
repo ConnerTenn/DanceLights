@@ -19,6 +19,8 @@ public:
 	LightStrip();
 	LightStrip(int length, int stripOffset, int channel);
 	LightStrip(const LightStrip &other);
+	void operator=(const LightStrip &other);
+	~LightStrip();
 	
 	
 	void Update(i64 now, DanceController *dance);//Style *style);

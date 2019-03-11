@@ -71,9 +71,9 @@ public:
 	Cycle UpdateCycle, Beat, MulBeat;
 	int Speed = 0;
 	
-	RoundBuffer<Array<u8,5>> StateHist;
+	//RoundBuffer<Array<u8,5>> StateHist;
 	
-	std::vector<LightStrip> LightStripList;
+	DynamicArray<LightStrip> LightStripList;
 	
 	std::vector<ColourTimestamp> ColourHist;
 	
