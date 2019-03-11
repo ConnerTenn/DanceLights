@@ -99,7 +99,17 @@ inline RGB RGBScale(RGB rgb, double scale)
 }
 inline RGB ColourMix(RGB a, RGB b, double w)
 {
-	return {(u8)(a.R*(1.0-w) + b.R*(w)), (u8)(a.G*(1.0-w) + b.G*(w)), (u8)(a.B*(1.0-w) + b.B*(w))};
+	double iw = 1.0-w;
+	return {(u8)(a.R*iw + b.R*w), (u8)(a.G*iw + b.G*w), (u8)(a.B*iw + b.B*w)};
+}
+inline RGB ColourMixInt(RGB a, RGB b, i32 w)
+{
+	double iw = 1000-w;
+	return {(u8)((a.R*iw + b.R*w)/1000), (u8)((a.G*iw + b.G*w)/1000), (u8)((a.B*iw + b.B*w)/1000)};
+}
+inline double Bistable(double x, double a)
+{
+	return x<0 ? 0 : (x<a && a!=0 ? x/a : 1);
 }
 
 inline RGB RGBVal2(HSLA val)

@@ -23,10 +23,7 @@ class DanceController;
 #include "Globals.h"
 #include "LightStrip.h"
 
-inline double Bistable(double x, double a)
-{
-	return x<0 ? 0 : (x<a && a!=0 ? x/a : 1);
-}
+//#define Bistable(x, a) ((x)<0 ? 0 : ((x)<(a) && (a)!=0 ? (x)/(a) : 1))
 //double ASD(double x, double a, double s, double d);
 //double ASDR(double x, double a, double s, double d, double r, double f);
 double RoundMean(double a, double b, double m, double w = 0.5);
@@ -57,7 +54,7 @@ struct ColourTimestamp
 {
 	i64 Time;
 	i64 Attack;
-	ColourVal Colour;
+	RGB Colour;
 };
 
 class DanceController
@@ -99,17 +96,18 @@ public:
 		
 		int max=ColourHist.size();
 		int i = max-1;
-		for (; i>=0 && ColourHist[i].Time > now; i--) { }
+		ColourTimestamp *timestamp = &ColourHist[i];
+		for (; i>=0 && timestamp->Time > now; i--) { }
 		if (max)
 		{
-			double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
-			colour = ColourMix(i == 0 ? colour : RGBVal(ColourHist[i-1].Colour), RGBVal(ColourHist[i].Colour), mix);
+			double mix = Bistable(now-timestamp->Time, timestamp->Attack);
+			colour = ColourMix(i == 0 ? colour : ColourHist[i-1].Colour, timestamp->Colour, mix);
 		}
 		
 		return colour;
 	}
 	
-	ColourVal ColourPicker();
+	RGB ColourPicker();
 };
 
 #endif

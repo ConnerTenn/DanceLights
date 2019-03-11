@@ -209,7 +209,7 @@ void DanceController::Update()
 			ColourHist.push_back(timestamp);
 			timestamp.Time = Now+MulBeat.Period*attack;
 			timestamp.Attack = MulBeat.Period*decay;
-			timestamp.Colour = { 0.0, 0.0 };
+			timestamp.Colour = { 0,0,0 };
 			ColourHist.push_back(timestamp);
 			//if (CurrStyle == Style::FlipFlop) { Oldest = Now; }
 		}
@@ -228,7 +228,7 @@ void DanceController::Update()
 			ColourHist.push_back(timestamp);
 			timestamp.Time = Now+MulBeat.Period*attack;
 			timestamp.Attack = MulBeat.Period*decay;
-			timestamp.Colour = { 0.0, 0.0 };
+			timestamp.Colour = { 0,0,0 };
 			ColourHist.push_back(timestamp);
 		}
 		
@@ -281,7 +281,7 @@ void DanceController::Update()
 }*/
 
 
-ColourVal DanceController::ColourPicker()
+RGB DanceController::ColourPicker()
 {
 	static ColourVal last = {0,0};
 	ColourVal choice;
@@ -305,5 +305,5 @@ ColourVal DanceController::ColourPicker()
 	
 	last = choice;
 	
-	return choice;
+	return RGBScale(RGBVal(choice), 0.1);
 }

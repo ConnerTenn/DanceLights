@@ -31,16 +31,13 @@ void SetupHandlers()
 DanceController Dance;
 LEDController Controller;
 
-/*void RenderThread()
+void RenderThread()
 {
 	while (Run)
 	{
-		for (int i = 0; i < (int)Dance.LightStripList.size(); i++)
-		{
-			Controller.Draw(&Dance.LightStripList[i]);
-		}
+		if (!Controller.Render()) { Run=false; }
 	}
-}*/
+}
 
 
 
@@ -48,7 +45,7 @@ i64 Time1, Time2;
 
 int main()
 {
-	//std::thread renderThread;
+	std::thread renderThread;
 	SetupHandlers();
 	srand(StartTime);
 
@@ -62,7 +59,7 @@ int main()
 
 	if(!Controller.Init(300,0)) { return 1; }
 
-	//renderThread = std::thread(RenderThread);
+	renderThread = std::thread(RenderThread);
 
 	printf("Main Loop\n");
 	i64 now = StartTime;
@@ -70,16 +67,20 @@ int main()
 	while (Run)
 	{
 		//std::cout << "Start Loop\n";
-		if (!Controller.Render()) { Run=false; }
 		//std::cout << "Render Done\n";
 
 		Dance.Update();
+		
 		//std::cout << "Update Done\n";
 		for (int i = 0; i < (int)Dance.LightStripList.size(); i++)
 		{
 			Controller.Draw(&Dance.LightStripList[i]);
 		}
 		//std::cout << "Draw Done\n";
+
+		//Time1 = GetMicroseconds();
+		//if (!Controller.Render()) { Run=false; }
+		//Time2 = GetMicroseconds();
 
 		i64 delta = GetMicroseconds() - now;
 		now = GetMicroseconds();

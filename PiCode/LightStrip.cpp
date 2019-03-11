@@ -45,12 +45,10 @@ LightStrip::~LightStrip()
 
 void LightStrip::Update(i64 now, DanceController *dance)
 {
-	Time1 = GetMicroseconds();
 	for (int i = 0; i < Length; i++)
 	{
 		Lights[i] = dance->GetColour(now - Delay[i]);
 	}
-	Time2 = GetMicroseconds();
 }
 
 void LightStrip::UpdateDelays(Style style, double period, bool flipflop)
