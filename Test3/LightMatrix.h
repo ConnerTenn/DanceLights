@@ -12,25 +12,20 @@ class LightMatrix;
 class LightMatrix : public LightContainer
 {
 public:
-	
-	int Length;
-	int StripOffset;
-	int Channel;
-	
-	int Width;
+	int Width, Height;
 	
 	
 	LightMatrix();
-	LightMatrix(int length, int stripOffset, int channel);
+	LightMatrix(int width, int height, int stripOffset, int channel, int xoff, int yoff);
 	LightMatrix(const LightMatrix &other);
-	void operator=(const LightMatrix &other);
+	//void operator=(const LightMatrix &other);
 	~LightMatrix();
 	
 	
 	void Update(i64 now, DanceController *dance);
 	void UpdateDelays(Style style, double period, bool flipflop);
 	
-	void Draw(int X, int Y, int Direction);
+	void Draw(int xoff, int yoff);
 
 };
 

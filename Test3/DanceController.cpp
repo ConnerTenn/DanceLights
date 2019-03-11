@@ -125,7 +125,7 @@ bool Cycle::operator()(i64 t, double error, bool symmetricError, bool *latch)
 
 
 DanceController::DanceController() : 
-		UpdateCycle(), Beat(4), StateHist(120), LightStripList(1)
+		UpdateCycle(), Beat(4), StateHist(120), LightStripList(2)
 {
 	Start = GetMilliseconds();
 	UpdateCycle.Period = 20;
@@ -134,7 +134,8 @@ DanceController::DanceController() :
 	Beat.ActOnPulseOn = true;
 	Beat.Period = 400;
 	
-	LightStripList[0]= new LightStrip(100,0,0);
+	LightStripList[0]= new LightStrip(100,0,0,0,0);
+	LightStripList[1]= new LightMatrix(38,6,0,0,0,40);
 	//LightStripList.push_back(LightStrip(30,0,0));
 	//LightStripList.push_back(LightStrip(30,30,0));
 	//LightStripList.push_back(LightStrip(30,60,0));
@@ -219,7 +220,7 @@ void DanceController::Update()
 			timestamp.Attack = MulBeat.Period*decay;
 			timestamp.Colour = { 0,0,0 };
 			ColourHist.push_back(timestamp);
-			//if (CurrStyle == Style::FlipFlop) { Oldest = Now; }
+			if (CurrStyle == Style::FlipFlop) { Oldest = Now; }
 		}
 		else if (CurrStyle == Style::StreakFade)
 		{
@@ -320,11 +321,12 @@ void DanceController::Draw(int xOff, int yOff)
 	DrawText(xOff+170, yOff+80, "Timestamp Count:" + std::to_string(ColourHist.size()), {255,255,255});
 	for (int i = 0; i < (int)LightStripList.size(); i++)
 	{
-		for (int j = 0; j < LightStripList[i]->Length; j++)
+		LightStripList[i]->Draw(xOff+170, yOff+100);
+		/*for (int j = 0; j < LightStripList[i]->Length; j++)
 		{
 			DrawRectangle(xOff + 170 + j*20, yOff + 100 + i*40, 20, 20, LightStripList[i]->Lights[j]);
 		}
-		OutlineRectangle(xOff + 170, yOff + 100 + i*40, 20*LightStripList[i]->Length, 20, {255,255,255});
+		OutlineRectangle(xOff + 170, yOff + 100 + i*40, 20*LightStripList[i]->Length, 20, {255,255,255});*/
 	}
 	
 }

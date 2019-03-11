@@ -7,13 +7,16 @@ LightContainer::LightContainer() :
 {
 	StripOffset = 0;
 	Channel = 0;
+	Xoff = 0; Yoff = 0;
 }
 
-LightContainer::LightContainer(int length, int stripOffset, int channel) :
+LightContainer::LightContainer(int length, int stripOffset, int channel, int xoff, int yoff) :
 		Length(length), Lights(Length), Delay(Length)
 {
 	StripOffset = stripOffset;
 	Channel = channel;
+	Xoff = xoff;
+	Yoff = yoff;
 	for (int i = 0; i < Length; i++)
 	{
 		Lights[i] = {0,0,0};

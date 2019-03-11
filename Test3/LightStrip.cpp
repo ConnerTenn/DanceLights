@@ -2,14 +2,14 @@
 #include "LightStrip.h"
 
 LightStrip::LightStrip() :
-		LightContainer(0, 0, 0)
+		LightContainer(0, 0, 0, 0, 0)
 {
 	/*StripOffset = 0;
 	Channel = 0;*/
 }
 
-LightStrip::LightStrip(int length, int stripOffset, int channel) :
-		LightContainer(length,stripOffset,channel)
+LightStrip::LightStrip(int length, int stripOffset, int channel, int xoff, int yoff) :
+		LightContainer(length,stripOffset,channel,xoff,yoff)
 {
 	/*StripOffset = stripOffset;
 	Channel = channel;
@@ -31,14 +31,14 @@ LightStrip::LightStrip(const LightStrip &other) :
 		Delay[i] = other.Delay.Values[i];
 	}*/
 }
-void LightStrip::operator=(const LightStrip &other)
+/*void LightStrip::operator=(const LightStrip &other)
 {
 	Length = other.Length;
 	Lights = other.Lights;
 	Delay = other.Delay;
 	StripOffset = other.StripOffset;
 	Channel = other.Channel;
-}
+}*/
 LightStrip::~LightStrip()
 {
 }
@@ -83,16 +83,12 @@ void LightStrip::UpdateDelays(Style style, double period, bool flipflop)
 	}
 }
 
-void LightStrip::Draw(int xOff, int yOff, int direction)
+void LightStrip::Draw(int xoff, int yoff)
 {
-	int x = xOff, y = yOff;
 	for (int i = 0; i < Length; i++)
 	{
-		DrawRectangle(x, y, 20, 20, Lights[i]);
-		if (direction == 0) {x+=20;}
-		else if (direction == 1) {y+=20;}
+		DrawRectangle(i*20+Xoff+xoff, Yoff+yoff, 20, 20, Lights[i]);
 	}
-	if (direction == 0) { OutlineRectangle(xOff,yOff,Length*20,20,RGB{255,255,255}); }
-	else if (direction == 1) { OutlineRectangle(xOff,yOff,20,Length*20,RGB{255,255,255}); }
+	OutlineRectangle(Xoff+xoff,Yoff+yoff,Length*20,20,RGB{255,255,255});
 }
 

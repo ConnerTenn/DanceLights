@@ -22,8 +22,9 @@ class DanceController;
 
 #include "Globals.h"
 #include "WindowController.h"
-//#include "LightContainer.h"
+#include "LightContainer.h"
 #include "LightStrip.h"
+#include "LightMatrix.h"
 
 //double ASD(double x, double a, double s, double d);
 //double ASDR(double x, double a, double s, double d, double r, double f);
@@ -84,7 +85,7 @@ public:
 	bool Manual = false, ForceUpdate = false;
 	
 	bool FlipFlop = false;
-	//i64 Oldest = 0;
+	i64 Oldest = 0;
 	
 	DanceController();
 	~DanceController();
