@@ -125,7 +125,7 @@ bool Cycle::operator()(i64 t, double error, bool symmetricError, bool *latch)
 
 
 DanceController::DanceController() : 
-		UpdateCycle(), Beat(4), /*StateHist(120),*/ LightStripList(1)
+		UpdateCycle(), Beat(4), /*StateHist(120),*/ LightStripList(2)
 {
 	Start = GetMilliseconds();
 	UpdateCycle.Period = 20;
@@ -134,7 +134,8 @@ DanceController::DanceController() :
 	Beat.ActOnPulseOn = true;
 	Beat.Period = 400;
 	
-	LightStripList[0]=(LightStrip(300,0,0));
+	LightStripList[0]=(LightStrip(30,0,1));
+	LightStripList[1]=(LightStrip(30,31,1));
 	//LightStripList.push_back(LightStrip(30,0,0));
 	//LightStripList.push_back(LightStrip(30,30,0));
 	//LightStripList.push_back(LightStrip(30,60,0));

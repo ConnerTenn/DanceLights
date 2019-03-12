@@ -57,7 +57,7 @@ int main()
 	//pinMode(16, OUTPUT);
 	//digitalWrite(16, level); level=!level;
 
-	if(!Controller.Init(300,0)) { return 1; }
+	if(!Controller.Init(300,300,300)) { return 1; }
 
 	renderThread = std::thread(RenderThread);
 
@@ -90,7 +90,7 @@ int main()
 
 	}
 
-	//renderThread.join();
+	renderThread.join();
 
 	Controller.Destroy();
 	

@@ -36,9 +36,10 @@ class LEDController
 {
 public:
     ws2811_return_t Ret;
-    ws2811_t LedDef;
+    ws2811_t LedDef1;
+    ws2811_t LedDef2;
 
-    bool Init(int len1, int len2);
+    bool Init(int len1, int len2, int len3);
     void Destroy();
 
     void Clear();
