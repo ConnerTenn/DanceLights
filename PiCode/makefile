@@ -14,6 +14,9 @@ CFLAGS= $(INCLUDE:%=-I %) -Wno-psabi -o3 #-I ../libmad/ -I ../../PixelTerm
 
 all: program
 
+run: delprogram program
+	sudo ./program
+
 program: main.o LEDController.o LightStrip.o LightMatrix.o LightContainer.o DanceController.o Globals.o
 	$(GPP) $(CFLAGS) $^ $(OBJS) $(LIBS) $(LPIXTERM) -o $@
 	
@@ -40,5 +43,8 @@ Globals.o: Globals.cpp Globals.h
 
 force: clean all
 
-clean: 
-	rm *.o program* -f
+delprogram:
+	rm program -f
+
+clean: delprogram 
+	rm *.o -f

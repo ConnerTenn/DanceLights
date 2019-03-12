@@ -144,7 +144,7 @@ DanceController::DanceController() :
 	//LightStripList.push_back(LightStrip(110,0,0));
 	//Last=Start;
 
-	NextStyle = Style::Streak;
+	NextStyle = Style::Fade;
 	MajorWeight = 1;
 }
 DanceController::~DanceController()

@@ -4,32 +4,15 @@
 LightMatrix::LightMatrix() :
 		LightContainer(0, 0, 0)
 {
-	/*StripOffset = 0;
-	Channel = 0;*/
 }
 
 LightMatrix::LightMatrix(int width, int height, int stripOffset, int channel) :
 		LightContainer(width*height,stripOffset,channel), Width(width), Height(height)
 {
-	/*StripOffset = stripOffset;
-	Channel = channel;
-	for (int i = 0; i < Length; i++)
-	{
-		Lights[i] = {0,0,0};
-		//Delay[i] = (i64)(((1.0-cos(TAU*(i-Length/2)/30.0)+1)/2.0)*100.0);
-		Delay[i] = i*50;
-	}*/
 }
 LightMatrix::LightMatrix(const LightMatrix &other) :
 		LightContainer(other)
 {
-	/*StripOffset = other.StripOffset;
-	Channel = other.Channel;
-	for (int i = 0; i < Length; i++)
-	{
-		Lights[i] = other.Lights.Values[i];
-		Delay[i] = other.Delay.Values[i];
-	}*/
 }
 LightMatrix::~LightMatrix()
 {

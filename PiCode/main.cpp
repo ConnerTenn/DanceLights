@@ -1,7 +1,7 @@
 
 #include <wiringPi.h>
 #include "DanceController.h"
-#include "LightStrip.h"
+//#include "LightStrip.h"
 #include "LEDController.h"
 #include <thread>
 
@@ -40,6 +40,19 @@ void RenderThread()
 }
 
 
+enum ButtonMaps
+{
+	RightIndex = 2,
+	RightMiddle = 3,
+	RightRing = 4,
+	RightPinky = 17,
+	RightThumb = 23,
+	LeftIndex = 27,
+	LeftMiddle = 22,
+	LeftRing = 5,
+	LeftPinky = 6,
+	LeftThumb = 24
+};
 
 i64 Time1, Time2;
 
@@ -54,8 +67,16 @@ int main()
 	
 	wiringPiSetup();
 	wiringPiSetupGpio();
-	//pinMode(16, OUTPUT);
-	//digitalWrite(16, level); level=!level;
+	pinMode(RightIndex, INPUT);
+	pinMode(RightMiddle, INPUT);
+	pinMode(RightRing, INPUT);
+	pinMode(RightPinky, INPUT);
+	pinMode(RightThumb, INPUT);
+	pinMode(LeftIndex, INPUT);
+	pinMode(LeftMiddle, INPUT);
+	pinMode(LeftRing, INPUT);
+	pinMode(LeftPinky, INPUT);
+	pinMode(LeftThumb, INPUT);
 
 	if(!Controller.Init(300,300,300)) { return 1; }
 
@@ -66,21 +87,26 @@ int main()
 	i64 maxTime = 0;
 	while (Run)
 	{
-		//std::cout << "Start Loop\n";
-		//std::cout << "Render Done\n";
+		if (digitalRead(RightIndex))  { Dance.NextStyle = Style::Pulse; }
+		if (digitalRead(RightMiddle)) { Dance.NextStyle = Style::Streak; }
+		if (digitalRead(RightRing))   { Dance.NextStyle = Style::StreakFade; }
+		if (digitalRead(RightPinky))  { Dance.NextStyle = Style::FlipFlop; }
+		if (digitalRead(RightThumb))  { Dance.NextStyle = Style::Fade; }
+
+		if (digitalRead(LeftIndex))  { Dance.Speed = -2; }
+		if (digitalRead(LeftMiddle)) { Dance.Speed = -1; }
+		if (digitalRead(LeftRing))   { Dance.Speed = 1; }
+		if (digitalRead(LeftPinky))  { Dance.Speed = 2; }
+		if (digitalRead(LeftThumb))  { Dance.Speed = 0; }
 
 		Dance.Update();
 		
-		//std::cout << "Update Done\n";
 		for (int i = 0; i < (int)Dance.LightStripList.size(); i++)
 		{
 			Controller.Draw(Dance.LightStripList[i]);
 		}
-		//std::cout << "Draw Done\n";
-
-		//Time1 = GetMicroseconds();
+		
 		//if (!Controller.Render()) { Run=false; }
-		//Time2 = GetMicroseconds();
 
 		i64 delta = GetMicroseconds() - now;
 		now = GetMicroseconds();

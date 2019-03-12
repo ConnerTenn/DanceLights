@@ -52,9 +52,6 @@ bool LEDController::Init(int len1, int len2, int len3)
 		std::cerr << "ws2811_init 2 failed: " << ws2811_get_return_t_str(Ret) << "\n";
         return false;
 	}
-    std::cout << LedDef1.channel[0].count << "\n";
-    std::cout << LedDef1.channel[1].count << "\n";
-    std::cout << LedDef2.channel[0].count << "\n";
 
     Clear();
 
