@@ -5,22 +5,16 @@ class LightStrip;
 #define _LIGHT_STRIP_H_
 
 #include "DanceController.h"
-#include <thread>
+#include "LightContainer.h"
 
-class LightStrip
+class LightStrip : public LightContainer
 {
 public:
-	
-	int Length;
-	int StripOffset;
-	int Channel;
-	DynamicArray<RGB> Lights;
-	DynamicArray<i64> Delay;
 	
 	LightStrip();
 	LightStrip(int length, int stripOffset, int channel);
 	LightStrip(const LightStrip &other);
-	void operator=(const LightStrip &other);
+	//void operator=(const LightStrip &other);
 	~LightStrip();
 	
 	
