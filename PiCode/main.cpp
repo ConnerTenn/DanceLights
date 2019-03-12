@@ -3,7 +3,7 @@
 #include "DanceController.h"
 #include "LightStrip.h"
 #include "LEDController.h"
-//#include <thread>
+#include <thread>
 
 u32 RGBVal(double val)
 {		
@@ -74,7 +74,7 @@ int main()
 		//std::cout << "Update Done\n";
 		for (int i = 0; i < (int)Dance.LightStripList.size(); i++)
 		{
-			Controller.Draw(&Dance.LightStripList[i]);
+			Controller.Draw(Dance.LightStripList[i]);
 		}
 		//std::cout << "Draw Done\n";
 

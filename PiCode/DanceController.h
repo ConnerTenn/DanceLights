@@ -21,9 +21,10 @@ class DanceController;
 #define _DANCE_CONTROLLER_H_
 
 #include "Globals.h"
+#include "LightContainer.h"
 #include "LightStrip.h"
+#include "LightMatrix.h"
 
-//#define Bistable(x, a) ((x)<0 ? 0 : ((x)<(a) && (a)!=0 ? (x)/(a) : 1))
 //double ASD(double x, double a, double s, double d);
 //double ASDR(double x, double a, double s, double d, double r, double f);
 double RoundMean(double a, double b, double m, double w = 0.5);
@@ -70,7 +71,7 @@ public:
 	
 	//RoundBuffer<Array<u8,5>> StateHist;
 	
-	DynamicArray<LightStrip> LightStripList;
+	DynamicArray<LightContainer *> LightStripList;
 	
 	std::vector<ColourTimestamp> ColourHist;
 	
@@ -86,6 +87,7 @@ public:
 	//i64 Oldest = 0;
 	
 	DanceController();
+	~DanceController();
 	
 	void Update();
 	

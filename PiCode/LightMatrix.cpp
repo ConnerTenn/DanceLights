@@ -1,15 +1,15 @@
 
-#include "LightStrip.h"
+#include "LightMatrix.h"
 
-LightStrip::LightStrip() :
-		LightContainer(0,0,0)
+LightMatrix::LightMatrix() :
+		LightContainer(0, 0, 0)
 {
 	/*StripOffset = 0;
 	Channel = 0;*/
 }
 
-LightStrip::LightStrip(int length, int stripOffset, int channel) :
-		LightContainer(length,stripOffset,channel)
+LightMatrix::LightMatrix(int width, int height, int stripOffset, int channel) :
+		LightContainer(width*height,stripOffset,channel), Width(width), Height(height)
 {
 	/*StripOffset = stripOffset;
 	Channel = channel;
@@ -20,7 +20,7 @@ LightStrip::LightStrip(int length, int stripOffset, int channel) :
 		Delay[i] = i*50;
 	}*/
 }
-LightStrip::LightStrip(const LightStrip &other) :
+LightMatrix::LightMatrix(const LightMatrix &other) :
 		LightContainer(other)
 {
 	/*StripOffset = other.StripOffset;
@@ -31,19 +31,12 @@ LightStrip::LightStrip(const LightStrip &other) :
 		Delay[i] = other.Delay.Values[i];
 	}*/
 }
-/*void LightStrip::operator=(const LightStrip &other)
+LightMatrix::~LightMatrix()
 {
-	Length = other.Length;
-	Lights = other.Lights;
-	Delay = other.Delay;
-	StripOffset = other.StripOffset;
-	Channel = other.Channel;
-}*/
-LightStrip::~LightStrip()
-{
+	
 }
 
-void LightStrip::Update(i64 now, DanceController *dance)
+void LightMatrix::Update(i64 now, DanceController *dance)
 {
 	for (int i = 0; i < Length; i++)
 	{
@@ -51,7 +44,7 @@ void LightStrip::Update(i64 now, DanceController *dance)
 	}
 }
 
-void LightStrip::UpdateDelays(Style style, double period, bool flipflop)
+void LightMatrix::UpdateDelays(Style style, double period, bool flipflop)
 {
 	for (int i = 0; i < Length; i++)
 	{
@@ -64,11 +57,11 @@ void LightStrip::UpdateDelays(Style style, double period, bool flipflop)
 		}
 		else if (style == Style::Streak)
 		{
-			delay = i*(i64)(period/100.0);
+			delay = (i/Width)*(i64)(period/100.0);
 		}
 		else if (style == Style::StreakFade)
 		{
-			delay = i*(i64)(period/100.0);
+			delay = (i/Width)*(i64)(period/100.0);
 		}
 		else if (style == Style::Pulse)
 		{
@@ -76,10 +69,9 @@ void LightStrip::UpdateDelays(Style style, double period, bool flipflop)
 		}
 		else if (style == Style::FlipFlop)
 		{
-			delay = flipflop ? (i64)(i*((period-period*0.6)*0.7)/Length) : 0;
+			delay = flipflop ? (i64)((i/Width)*((period-period*0.6)*0.7)/Height) : 0;
 		}
 		
 		Delay[i] = delay;
 	}
 }
-

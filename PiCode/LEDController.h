@@ -45,7 +45,7 @@ public:
     void Clear();
     bool Render();
 
-    void Draw(LightStrip *strip);
+    void Draw(LightContainer *strip);
 };
 
 #endif 

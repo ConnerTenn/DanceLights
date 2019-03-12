@@ -134,8 +134,8 @@ DanceController::DanceController() :
 	Beat.ActOnPulseOn = true;
 	Beat.Period = 400;
 	
-	LightStripList[0]=(LightStrip(30,0,1));
-	LightStripList[1]=(LightStrip(30,31,1));
+	LightStripList[0] = new LightStrip(30,0,1);
+	LightStripList[1] = new LightStrip(30,31,1);
 	//LightStripList.push_back(LightStrip(30,0,0));
 	//LightStripList.push_back(LightStrip(30,30,0));
 	//LightStripList.push_back(LightStrip(30,60,0));
@@ -146,6 +146,14 @@ DanceController::DanceController() :
 
 	NextStyle = Style::Streak;
 	MajorWeight = 1;
+}
+DanceController::~DanceController()
+{
+	for (int i = 0; i < LightStripList.size(); i++)
+	{
+		delete LightStripList[i];
+		LightStripList[i] = 0;
+	}
 }
 
 void DanceController::Update()
@@ -250,8 +258,8 @@ void DanceController::Update()
 	
 	for (i64 i = 0; i < (i64)LightStripList.size(); i++)
 	{
-		if (updateDelays) { LightStripList[i].UpdateDelays(CurrStyle, MulBeat.Period, FlipFlop); }
-		LightStripList[i].Update(Now/*-i*50*/, this);
+		if (updateDelays) { LightStripList[i]->UpdateDelays(CurrStyle, MulBeat.Period, FlipFlop); }
+		LightStripList[i]->Update(Now/*-i*50*/, this);
 	}
 	
 	for (i64 i = 0; i < (i64)ColourHist.size();)

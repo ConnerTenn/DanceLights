@@ -131,6 +131,7 @@ inline RGB RGBVal2(HSLA val)
 	return {(u8)((r+m)*a), (u8)((g+m)*a), (u8)((b+m)*a)};
 }
 
+
 template<class T, int N>
 struct Array
 {
