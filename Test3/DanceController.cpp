@@ -135,7 +135,7 @@ DanceController::DanceController() :
 	Beat.Period = 400;
 	
 	LightStripList[0]= new LightStrip(100,0,0,0,0);
-	LightStripList[1]= new LightMatrix(38,6,0,0,0,40);
+	LightStripList[1]= new LightMatrix(38,7,0,0,0,40);
 	//LightStripList.push_back(LightStrip(30,0,0));
 	//LightStripList.push_back(LightStrip(30,30,0));
 	//LightStripList.push_back(LightStrip(30,60,0));
@@ -242,8 +242,11 @@ void DanceController::Update()
 		}
 		
 		FlipFlop = !FlipFlop;
-		ForceUpdate = false;
+		ForceUpdate = false;	
 	}
+	
+	static bool textLatch = false; 
+	if ((Now-Start) % 12000 <= 100) { if (!textLatch) { ((LightMatrix *)LightStripList[1])->DrawText(Now, "OwO");} textLatch = true; } else { textLatch = false; }
 	
 	if (Hold)
 	{
@@ -287,6 +290,9 @@ void DanceController::Draw(int xOff, int yOff)
 	//OutlineRectangle(90+xOff, 15+yOff, 30, 10, RGB{255,255,255});
 	DrawRectangle(10*MajorWeight+100+xOff, yOff, 10, 10, RGB{255,255,255});
 	//DrawRectangle(10*MinorWeight+100+xOff, 15+yOff, 10, 10, RGB{255,255,255});
+	
+	DrawText(130+xOff, 40+yOff, ((LightMatrix *)LightStripList[1])->Text, {255,255,255});
+	
 	
 	//Draw StateIn Hist
 	for (int i = 0; i < StateHist.size(); i++)

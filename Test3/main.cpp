@@ -52,7 +52,7 @@ int main()
 				if (key == 'l') {Dance.NextStyle = Style::Fade; }
 				if (key == 'g') {Dance.NextStyle = Style::FlipFlop; }
 				
-				if (key == 'a') { Dance.Hold = true; }
+				if (key == 'a') { Dance.Hold = true; } 
 				if (key == 's') { Dance.Manual = true; }
 				if (key == 'd') { Dance.ForceUpdate = true; }
 				

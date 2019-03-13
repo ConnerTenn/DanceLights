@@ -14,6 +14,7 @@
 #include <chrono>
 //#include <cstring>
 //#include <thread>
+#include <string>
 
 //#include <PixelTerm.h>
 
