@@ -43,22 +43,26 @@ void LightMatrix::Update(i64 now, DanceController *dance)
 		Lights[i] = dance->GetColour(now - Delay[i]);
 	}
 	
-	int w = 0;
-	bool draw = false;
-	for (int i = 0; i < (int)Text.size(); i++)
+	
+	for (int t = 0; t < (int)Text.size(); t++)
 	{
-		int j = (now-TextStartTime)/200;
-		char c = Text[i];
-		if (c>= 'a' && c <= 'z') { c = c-'a'; }
-		else if (c>= 'A' && c <= 'Z') { c = c-'A'; }
-		if (c>=0 && c <= (int)sizeof(Characters))
+		int w = 0;
+		bool draw = false;
+		for (int i = 0; i < (int)Text[t].Text.size(); i++)
 		{
-			DrawCharacter(Width-j-1+w, c);
-			w += Characters[(int)c][7]+1;
-			if (Width-j-1+w >= 0) { draw = true; }
+			int j = (now-Text[t].StartTime)/100;
+			char c = Text[t].Text[i];
+			if (c>= 'a' && c <= 'z') { c = c-'a'; }
+			else if (c>= 'A' && c <= 'Z') { c = c-'A'; }
+			if (c>=0 && c <= (int)sizeof(Characters))
+			{
+				DrawCharacter(Width-j-1+w, c);
+				w += Characters[(int)c][7]+1;
+				if (Width-j-1+w >= 0) { draw = true; }
+			}
 		}
+		if (!draw) { Text.erase(Text.begin()+t); t--; }
 	}
-	if (!draw) {Text = ""; TextStartTime = 0; }
 }
 
 void LightMatrix::UpdateDelays(Style style, double period, bool flipflop)
@@ -114,10 +118,43 @@ void LightMatrix::DrawCharacter(int xPos, char c)
 	}
 }
 
+int LightMatrix::TextWidth(std::string text)
+{
+	int len = 0;
+	for (int i = 0; i < (int)text.size(); i++)
+	{
+		char c = text[i];
+		if (c>= 'a' && c <= 'z') { c = c-'a'; }
+		else if (c>= 'A' && c <= 'Z') { c = c-'A'; }
+		len+=Characters[(int)c][7];
+	}
+	return len;
+}
+
 void LightMatrix::DrawText(i64 now, std::string text)
 {
-	Text += text;
-	if (TextStartTime == 0) { TextStartTime = now; }
+	int len = 0; 
+	int j = 0;
+	if (Text.size()) 
+	{ 
+		len = TextWidth(Text.back().Text); 
+		j = (now - Text.back().StartTime)/100;
+		
+		std::cout << "len " << len << " j " << j << "\n";
+		if (Width-j-1 + len < Width) 
+		{
+			Text.push_back( TextTimestamp{text, now} );
+		}
+		else
+		{
+			Text.back().Text += text;
+		}
+	}
+	else
+	{
+		Text.push_back( TextTimestamp{text, now} );
+	}
+	
 }
 
 void LightMatrix::Draw(int xoff, int yoff)
