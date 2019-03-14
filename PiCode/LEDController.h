@@ -42,7 +42,7 @@ public:
     bool Init(int len1, int len2, int len3);
     void Destroy();
 
-    void Clear();
+    bool Clear();
     bool Render();
 
     void Draw(LightContainer *strip);

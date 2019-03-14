@@ -40,19 +40,71 @@ void RenderThread()
 }
 
 
-enum ButtonMaps
+enum ButtonNames
 {
-	RightIndex = 2,
-	RightMiddle = 3,
-	RightRing = 4,
-	RightPinky = 17,
-	RightThumb = 23,
-	LeftIndex = 27,
-	LeftMiddle = 22,
-	LeftRing = 5,
-	LeftPinky = 6,
-	LeftThumb = 24
+	RightIndex = 0,
+	RightMiddle,
+	RightRing,
+	RightPinky,
+	RightThumb,
+
+	RightIndex2,
+	RightMiddle2,
+	RightRing2,
+	RightPinky2,
+	RightThumb2,
+	
+	LeftIndex,
+	LeftMiddle,
+	LeftRing,
+	LeftPinky,
+	LeftThumb,
+
+	LeftIndex2,
+	LeftMiddle2,
+	LeftRing2,
+	LeftPinky2,
+	LeftThumb2,
 };
+
+u8 ButtonSetEnable[2] = {0,0};
+
+u8 ButtonArray[][3]=
+{
+	{0, 2},
+	{0, 3},
+	{0, 4},
+	{0, 17},
+	{0, 27},
+
+	{0, 2},
+	{0, 3},
+	{0, 4},
+	{0, 17},
+	{0, 27},
+
+	{0, 22},
+	{0, 9},
+	{0, 11},
+	{0, 5},
+	{0, 6},
+
+	{0, 22},
+	{0, 9},
+	{0, 11},
+	{0, 5},
+	{0, 6},
+};
+
+void UpdateButtons()
+{
+	for (int i = 0; i < 20; i++)
+	{
+		if (i%10==0) { digitalWrite(ButtonSetEnable[1-i/10], LOW); digitalWrite(ButtonSetEnable[i/10], HIGH); }
+
+		ButtonArray[i][0] = digitalRead(ButtonArray[i][1]);
+	}
+}
 
 i64 Time1, Time2;
 
@@ -67,16 +119,11 @@ int main()
 	
 	wiringPiSetup();
 	wiringPiSetupGpio();
-	pinMode(RightIndex, INPUT);
-	pinMode(RightMiddle, INPUT);
-	pinMode(RightRing, INPUT);
-	pinMode(RightPinky, INPUT);
-	pinMode(RightThumb, INPUT);
-	pinMode(LeftIndex, INPUT);
-	pinMode(LeftMiddle, INPUT);
-	pinMode(LeftRing, INPUT);
-	pinMode(LeftPinky, INPUT);
-	pinMode(LeftThumb, INPUT);
+	pinMode(ButtonSetEnable[0], OUTPUT); pinMode(ButtonSetEnable[1], OUTPUT);
+	for (int i = 0; i < 20; i++)
+	{
+		pinMode(ButtonArray[i][1], INPUT);
+	}
 
 	if(!Controller.Init(300,300,300)) { return 1; }
 
@@ -87,6 +134,7 @@ int main()
 	i64 maxTime = 0;
 	while (Run)
 	{
+		UpdateButtons();
 		if (digitalRead(RightIndex))  { Dance.NextStyle = Style::Pulse; }
 		if (digitalRead(RightMiddle)) { Dance.NextStyle = Style::Streak; }
 		if (digitalRead(RightRing))   { Dance.NextStyle = Style::StreakFade; }
@@ -98,6 +146,14 @@ int main()
 		if (digitalRead(LeftRing))   { Dance.Speed = 1; }
 		if (digitalRead(LeftPinky))  { Dance.Speed = 2; }
 		if (digitalRead(LeftThumb))  { Dance.Speed = 0; }
+
+		//if (digitalRead(Extra1)) { Dance.Hold = true; } else { Dance.Hold = false; }
+		//if (digitalRead(Extra2)) { Dance.Manual = true; } else { Dance.Manual = false; }
+		//if (digitalRead(Extra3)) { Dance.ForceUpdate = true; } else { Dance.ForceUpdate = false; }
+
+		//if (digitalRead(Extra4)) { Dance.MajorWeight = -1; }
+		//if (digitalRead(Extra5)) { Dance.MajorWeight = 0; }
+		//if (digitalRead(Extra6)) { Dance.MajorWeight = 1; }
 
 		Dance.Update();
 		
