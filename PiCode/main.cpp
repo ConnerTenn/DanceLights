@@ -142,32 +142,34 @@ int main()
 	{
 		UpdateButtons();
 
-		std::cout << "\r";
+		//std::cout << "\r";
 		for (int i = 0; i < 16; i++)
 		{
-			std::cout << (bool)ButtonArray[i][0] << " ";
-			if (i==7) { std::cout << " "; }
+			//std::cout << (bool)ButtonArray[i][0] << " ";
+			//if (i==7) { std::cout << " "; }
 		}
-		std::cout << std::flush ;
-		/*if (digitalRead(RightIndex))  { Dance.NextStyle = Style::Pulse; }
-		if (digitalRead(RightMiddle)) { Dance.NextStyle = Style::Streak; }
-		if (digitalRead(RightRing))   { Dance.NextStyle = Style::StreakFade; }
-		if (digitalRead(RightPinky))  { Dance.NextStyle = Style::FlipFlop; }
-		if (digitalRead(RightThumb))  { Dance.NextStyle = Style::Fade; }
+		//std::cout << std::flush ;
+		Dance.BeatIn = ButtonArray[RightIndex][0];
+		if (ButtonArray[RightPinky2][0]) { Dance.Beat.Period = 0; Dance.Beat.Align = 0; }
 
-		if (digitalRead(LeftIndex))  { Dance.Speed = -2; }
-		if (digitalRead(LeftMiddle)) { Dance.Speed = -1; }
-		if (digitalRead(LeftRing))   { Dance.Speed = 1; }
-		if (digitalRead(LeftPinky))  { Dance.Speed = 2; }
-		if (digitalRead(LeftThumb))  { Dance.Speed = 0; }*/
+		if (ButtonArray[LeftIndex][0])  { Dance.NextStyle = Style::Pulse; }
+		if (ButtonArray[LeftMiddle][0]) { Dance.NextStyle = Style::Streak; }
+		if (ButtonArray[LeftRing][0])   { Dance.NextStyle = Style::StreakFade; }
+		if (ButtonArray[LeftPinky][0])  { Dance.NextStyle = Style::Fade; }
+		//if (ButtonArray[Middle][0])  { Dance.NextStyle = Style::FlipFlop; }
 
-		//if (digitalRead(Extra1)) { Dance.Hold = true; } else { Dance.Hold = false; }
-		//if (digitalRead(Extra2)) { Dance.Manual = true; } else { Dance.Manual = false; }
-		//if (digitalRead(Extra3)) { Dance.ForceUpdate = true; } else { Dance.ForceUpdate = false; }
+		if (ButtonArray[LeftIndex2][0])  { Dance.Speed = 0; }
+		if (ButtonArray[LeftMiddle][0])  { Dance.Speed = 1; }
+		if (ButtonArray[LeftRing2][0])   { Dance.Speed = -1; }
+		if (ButtonArray[LeftPinky2][0])  { Dance.Speed = -2; }
 
-		//if (digitalRead(Extra4)) { Dance.MajorWeight = -1; }
-		//if (digitalRead(Extra5)) { Dance.MajorWeight = 0; }
-		//if (digitalRead(Extra6)) { Dance.MajorWeight = 1; }
+		if (ButtonArray[RightRing2][0]) { Dance.Hold = true; } else { Dance.Hold = false; }
+		if (ButtonArray[RightMiddle2][0])   { Dance.Manual = true; } else { Dance.Manual = false; }
+		if (ButtonArray[RightIndex2][0])  { Dance.ForceUpdate = true; } else { Dance.ForceUpdate = false; }
+
+		if (ButtonArray[RightMiddle][0]) { Dance.MajorWeight = -1; }
+		if (ButtonArray[RightRing][0])   { Dance.MajorWeight = 0; }
+		if (ButtonArray[RightPinky][0])  { Dance.MajorWeight = 1; }
 		
 		Dance.BeatIn = digitalRead(26);
 		//std::cout << (int)Dance.BeatIn << "\n";
@@ -185,7 +187,7 @@ int main()
 		now = GetMicroseconds();
 		maxTime = MAX(delta, maxTime);
 		static bool latch = false;
-		//if ((now-StartTime) % 100'000 < 50'000) { if (!latch) { std::cout << "\r" << "Runtime:" << std::to_string((now-StartTime)/1'000'000.0) << "  Frametime:" << std::to_string(delta/1'000'000.0) << "  Maxtime:" << std::to_string(maxTime/1'000'000.0) << "  Measure:" << std::to_string((Time2-Time1)/1'000'000.0) << std::flush; maxTime = 0; } latch = true; } else { latch = false; }
+		if ((now-StartTime) % 100'000 < 50'000) { if (!latch) { std::cout << "\r" << "Runtime:" << std::to_string((now-StartTime)/1'000'000.0) << "  Frametime:" << std::to_string(delta/1'000'000.0) << "  Maxtime:" << std::to_string(maxTime/1'000'000.0) << "  Measure:" << std::to_string((Time2-Time1)/1'000'000.0) << std::flush; maxTime = 0; } latch = true; } else { latch = false; }
 
 	}
 

@@ -98,13 +98,14 @@ public:
 		
 		int max=ColourHist.size();
 		int i = max-1;
-		ColourTimestamp *timestamp = &ColourHist[i];
-		for (; i>=0 && timestamp->Time > now; i--) { }
+		for (; i>0 && ColourHist[i].Time > now; i--) { }
 		if (max)
 		{
-			double mix = Bistable(now-timestamp->Time, timestamp->Attack);
-			colour = ColourMix(i == 0 ? colour : ColourHist[i-1].Colour, timestamp->Colour, mix);
+			double mix = Bistable(now-ColourHist[i].Time, ColourHist[i].Attack);
+			colour = ColourMix(i == 0 ? colour : ColourHist[i-1].Colour, ColourHist[i].Colour, mix);
 		}
+
+		//if (colour.R==0 &&colour.G==0 &&colour.B==0) { std::cout << "zero" << i << time"\n"; }
 		
 		return colour;
 	}

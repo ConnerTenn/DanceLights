@@ -125,7 +125,7 @@ bool Cycle::operator()(i64 t, double error, bool symmetricError, bool *latch)
 
 
 DanceController::DanceController() : 
-		UpdateCycle(), Beat(4), /*StateHist(120),*/ LightStripList(2)
+		UpdateCycle(), Beat(4), /*StateHist(120),*/ LightStripList(12)
 {
 	Start = GetMilliseconds();
 	UpdateCycle.Period = 20;
@@ -134,17 +134,29 @@ DanceController::DanceController() :
 	Beat.ActOnPulseOn = true;
 	Beat.Period = 400;
 	
-	LightStripList[0] = new LightStrip(30,0,1);
-	LightStripList[1] = new LightStrip(200,31,1);
-	//LightStripList.push_back(LightStrip(30,0,0));
-	//LightStripList.push_back(LightStrip(30,30,0));
-	//LightStripList.push_back(LightStrip(30,60,0));
-	//LightStripList.push_back(LightStrip(30,90,0));
-	//LightStripList.push_back(LightStrip(70,0,0));
-	//LightStripList.push_back(LightStrip(110,0,0));
-	//Last=Start;
+	//Channel 0: Hat
+	//Channel 1: Jacket
+	//Channel 2: Pants
 
-	NextStyle = Style::Fade;
+	//LEDs, StripOffset, TimeOffset, Channel, Inverse, Constant 
+	LightStripList[0] = new LightMatrix(0); //Hat
+	
+
+	LightStripList[1] = new LightStrip(60,0,0,1); //Bottom Strip
+	LightStripList[2] = new LightStrip(60,0,0,1); //Left Front
+	LightStripList[3] = new LightStrip(60,0,0,1); //Right Front
+	LightStripList[4] = new LightStrip(40,200,0,1); //Right Arm
+	LightStripList[5] = new LightStrip(40,200,0,1, false, true); //Right Wrist
+	LightStripList[6] = new LightStrip(40,200,0,1); //Left Arm
+	LightStripList[7] = new LightStrip(40,260,0,1, false, true); //Left Wrist
+
+	LightStripList[8] = new LightStrip(51,0,0,2); //Right Leg
+	LightStripList[9] = new LightStrip(20,0,0,2); //Right Ankle
+	LightStripList[10] = new LightStrip(51,51+25,0,2); //Left Leg
+	LightStripList[11] = new LightStrip(20,0,0,2); //Left Ankle
+	
+
+	NextStyle = Style::Streak;
 	MajorWeight = 1;
 }
 DanceController::~DanceController()
