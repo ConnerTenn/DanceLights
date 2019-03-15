@@ -36,6 +36,26 @@ LightMatrix::~LightMatrix()
 	
 }
 
+u8 ConvChar(u8 c)
+{
+	if (c < 26) {}
+	else if (c>= 'a' && c <= 'z') { c = c-'a'; }
+	else if (c>= 'A' && c <= 'Z') { c = c-'A'; }
+	else { return -1; }
+	
+	return c;
+}
+
+int TextWidth(std::string text)
+{
+	int len = 0;
+	for (int i = 0; i < (int)text.size(); i++)
+	{
+		len+=Characters[(int)ConvChar(text[i])][7];
+	}
+	return len;
+}
+
 void LightMatrix::Update(i64 now, DanceController *dance)
 {
 	for (int i = 0; i < Length; i++)
@@ -46,19 +66,18 @@ void LightMatrix::Update(i64 now, DanceController *dance)
 	
 	for (int t = 0; t < (int)Text.size(); t++)
 	{
-		int w = 0;
+		int x = 0;
 		bool draw = false;
 		for (int i = 0; i < (int)Text[t].Text.size(); i++)
 		{
 			int j = (now-Text[t].StartTime)/100;
-			char c = Text[t].Text[i];
-			if (c>= 'a' && c <= 'z') { c = c-'a'; }
-			else if (c>= 'A' && c <= 'Z') { c = c-'A'; }
-			if (c>=0 && c <= (int)sizeof(Characters))
+			char c = ConvChar(Text[t].Text[i]);
+			int w = Characters[(int)c][7];
+			if (c>=0 && c <= (int)sizeof(Characters) && Width-j-1+x < Width )
 			{
-				DrawCharacter(Width-j-1+w, c);
-				w += Characters[(int)c][7]+1;
-				if (Width-j-1+w >= 0) { draw = true; }
+				DrawCharacter(Width-j-1+x, c);
+				x += w+1;
+				if (Width-j-1+x >= 0) { draw = true; }
 			}
 		}
 		if (!draw) { Text.erase(Text.begin()+t); t--; }
@@ -99,9 +118,8 @@ void LightMatrix::UpdateDelays(Style style, double period, bool flipflop)
 
 void LightMatrix::SetPixel(int x, int y, RGB colour)
 {
-	int i = x+y*Width;
 	if (x < 0 || x >= Width || y < 0 || y >= Height) { return; }
-	Lights[i]=colour;
+	Lights[x+y*Width]=colour;
 }
 
 void LightMatrix::DrawCharacter(int xPos, char c)
@@ -111,24 +129,9 @@ void LightMatrix::DrawCharacter(int xPos, char c)
 	{
 		for (int x = 0; x < w; x++)
 		{
-			//std::cout << "Pix " << xPos+x << " " << y << " " << (int)((Characters[(int)c][y]>>(x))&1) << "\n";
 			if ((Characters[(int)c][y]>>(w-x-1))&1) { SetPixel(xPos+x, y, RGB{255,255,255}); }
-			//SetPixel(xPos+x, y, RGB{255,255,255});
 		}
 	}
-}
-
-int LightMatrix::TextWidth(std::string text)
-{
-	int len = 0;
-	for (int i = 0; i < (int)text.size(); i++)
-	{
-		char c = text[i];
-		if (c>= 'a' && c <= 'z') { c = c-'a'; }
-		else if (c>= 'A' && c <= 'Z') { c = c-'A'; }
-		len+=Characters[(int)c][7];
-	}
-	return len;
 }
 
 void LightMatrix::DrawText(i64 now, std::string text)
@@ -140,7 +143,6 @@ void LightMatrix::DrawText(i64 now, std::string text)
 		len = TextWidth(Text.back().Text); 
 		j = (now - Text.back().StartTime)/100;
 		
-		std::cout << "len " << len << " j " << j << "\n";
 		if (Width-j-1 + len < Width) 
 		{
 			Text.push_back( TextTimestamp{text, now} );

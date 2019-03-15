@@ -61,7 +61,6 @@ public:
 	void UpdateDelays(Style style, double period, bool flipflop);
 	void SetPixel(int x, int y, RGB colour);
 	void DrawCharacter(int xPos, char c);
-	int TextWidth(std::string text);
 	void DrawText(i64 now, std::string text);
 	
 	void Draw(int xoff, int yoff);
