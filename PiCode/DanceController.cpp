@@ -135,7 +135,7 @@ DanceController::DanceController() :
 	Beat.Period = 400;
 	
 	LightStripList[0] = new LightStrip(30,0,1);
-	LightStripList[1] = new LightStrip(30,31,1);
+	LightStripList[1] = new LightStrip(200,31,1);
 	//LightStripList.push_back(LightStrip(30,0,0));
 	//LightStripList.push_back(LightStrip(30,30,0));
 	//LightStripList.push_back(LightStrip(30,60,0));
