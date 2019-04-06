@@ -7,7 +7,7 @@ LightStrip::LightStrip() :
 }
 
 LightStrip::LightStrip(int length, int stripOffset, int timeOffset, int channel, bool inverse, bool constant) :
-		LightContainer(length,stripOffset,channel,timeOffset,inverse,constant)
+		LightContainer(length,stripOffset,timeOffset,channel,inverse,constant)
 {
 }
 LightStrip::LightStrip(const LightStrip &other) :

@@ -131,7 +131,7 @@ int main()
 	}
 	digitalWrite(ButtonSetEnable[0], HIGH); digitalWrite(ButtonSetEnable[1], HIGH);
 	
-	if(!Controller.Init(300,300,300)) { return 1; }
+	if(!Controller.Init(360,360,360)) { return 1; }
 
 	renderThread = std::thread(RenderThread);
 
@@ -142,36 +142,42 @@ int main()
 	{
 		UpdateButtons();
 
-		//std::cout << "\r";
-		for (int i = 0; i < 16; i++)
-		{
-			//std::cout << (bool)ButtonArray[i][0] << " ";
-			//if (i==7) { std::cout << " "; }
-		}
-		//std::cout << std::flush ;
 		Dance.BeatIn = ButtonArray[RightIndex][0];
-		if (ButtonArray[RightPinky2][0]) { Dance.Beat.Period = 0; Dance.Beat.Align = 0; }
+		if (ButtonArray[RightMiddle][0]) { Dance.Beat.Period = 0; Dance.Beat.Align = 0; }
 
-		if (ButtonArray[LeftIndex][0])  { Dance.NextStyle = Style::Pulse; }
-		if (ButtonArray[LeftMiddle][0]) { Dance.NextStyle = Style::Streak; }
-		if (ButtonArray[LeftRing][0])   { Dance.NextStyle = Style::StreakFade; }
-		if (ButtonArray[LeftPinky][0])  { Dance.NextStyle = Style::Fade; }
-		//if (ButtonArray[Middle][0])  { Dance.NextStyle = Style::FlipFlop; }
+		{
+			static bool latch = false;
+			if (ButtonArray[RightMiddle2][0]) 
+			{ 
+				if (!latch)
+				{
+					((LightMatrix *)Dance.LightStripList[1])->DrawText(now/1000, "OwO");
+				}
+				latch=true;
+			}
+			else {latch = false;}
+		}
 
+		if (ButtonArray[RightRing][0])  { Dance.NextStyle = Style::Fade; }
+		if (ButtonArray[RightPinky][0]) { Dance.NextStyle = Style::Pulse; }
+		//if (ButtonArray[LeftRing][0])   { Dance.NextStyle = Style::StreakFade; }
+		//if (ButtonArray[LeftPinky][0])  { Dance.NextStyle = Style::Fade; }
+		//if (ButtonArray[Middle][0])   { Dance.NextStyle = Style::FlipFlop; }
+		/*
 		if (ButtonArray[LeftIndex2][0])  { Dance.Speed = 0; }
 		if (ButtonArray[LeftMiddle][0])  { Dance.Speed = 1; }
-		if (ButtonArray[LeftRing2][0])   { Dance.Speed = -1; }
+		if (ButtonArray[LeftRing2][0])   { Dance.Speed = 2; }
 		if (ButtonArray[LeftPinky2][0])  { Dance.Speed = -2; }
 
-		if (ButtonArray[RightRing2][0]) { Dance.Hold = true; } else { Dance.Hold = false; }
-		if (ButtonArray[RightMiddle2][0])   { Dance.Manual = true; } else { Dance.Manual = false; }
-		if (ButtonArray[RightIndex2][0])  { Dance.ForceUpdate = true; } else { Dance.ForceUpdate = false; }
+		if (ButtonArray[RightRing2][0])   { Dance.Hold = true; } else { Dance.Hold = false; }
+		//if (ButtonArray[RightMiddle2][0]) { Dance.Manual = true; } else { Dance.Manual = false; }
+		//if (ButtonArray[RightIndex2][0])  { Dance.ForceUpdate = true; } else { Dance.ForceUpdate = false; }
 
-		if (ButtonArray[RightMiddle][0]) { Dance.MajorWeight = -1; }
+		if (ButtonArray[RightMiddle][0]) { Dance.MajorWeight = 1; }
 		if (ButtonArray[RightRing][0])   { Dance.MajorWeight = 0; }
-		if (ButtonArray[RightPinky][0])  { Dance.MajorWeight = 1; }
-		
-		Dance.BeatIn = digitalRead(26);
+		if (ButtonArray[RightPinky][0])  { Dance.MajorWeight = -1; }
+		*/
+		//Dance.BeatIn = ButtonArray[RightIndex][0];
 		//std::cout << (int)Dance.BeatIn << "\n";
 
 		Dance.Update();
@@ -187,8 +193,28 @@ int main()
 		now = GetMicroseconds();
 		maxTime = MAX(delta, maxTime);
 		static bool latch = false;
-		if ((now-StartTime) % 100'000 < 50'000) { if (!latch) { std::cout << "\r" << "Runtime:" << std::to_string((now-StartTime)/1'000'000.0) << "  Frametime:" << std::to_string(delta/1'000'000.0) << "  Maxtime:" << std::to_string(maxTime/1'000'000.0) << "  Measure:" << std::to_string((Time2-Time1)/1'000'000.0) << std::flush; maxTime = 0; } latch = true; } else { latch = false; }
+		if ((now-StartTime) % 100'000 < 50'000) 
+		{ 
+			if (!latch) 
+			{ 
 
+				std::cout << "\r";
+				for (int i = 0; i < 16; i++)
+				{
+					std::cout << (bool)ButtonArray[i][0] << " ";
+					if (i==7) { std::cout << " "; }
+				}
+				std::cout << "  Runtime:" << std::to_string((now-StartTime)/1'000'000.0) << "  Frametime:" << std::to_string(delta/1'000'000.0) << "  Maxtime:" << std::to_string(maxTime/1'000'000.0) << "  Measure:" << std::to_string((Time2-Time1)/1'000'000.0) << " HistCount:" << Dance.ColourHist.size(); 
+				maxTime = 0; 
+
+				std::cout << std::flush ;
+			} 
+			latch = true; 
+		} 
+		else { latch = false; }
+
+
+		usleep(100);
 	}
 
 	renderThread.join();

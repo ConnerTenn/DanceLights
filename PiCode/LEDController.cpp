@@ -100,6 +100,8 @@ bool LEDController::Render()
 void LEDController::Draw(LightContainer *strip)
 {
 	ws2811_channel_t *channel = (strip->Channel <= 1 ? &LedDef1.channel[strip->Channel] : &LedDef2.channel[0]);
+
+	//std::cout << strip->Channel << "\n";
 	//channel = &LedDef2.channel[0];
 	int max = MIN(channel->count-strip->StripOffset, strip->Length);
 	ws2811_led_t *leds = channel->leds;

@@ -125,7 +125,7 @@ bool Cycle::operator()(i64 t, double error, bool symmetricError, bool *latch)
 
 
 DanceController::DanceController() : 
-		UpdateCycle(), Beat(4), /*StateHist(120),*/ LightStripList(12)
+		UpdateCycle(), Beat(4), /*StateHist(120),*/ LightStripList(3)
 {
 	Start = GetMilliseconds();
 	UpdateCycle.Period = 20;
@@ -139,24 +139,32 @@ DanceController::DanceController() :
 	//Channel 2: Pants
 
 	//LEDs, StripOffset, TimeOffset, Channel, Inverse, Constant 
-	LightStripList[0] = new LightMatrix(0); //Hat
+	/*int len = 0, off = 0;
+	LightStripList[0] = new LightMatrix(1); //Hat
+	
+	len = 0; off = 0;
+	len=60; LightStripList[1] = new LightStrip(len,off,0,0); off+=len; //Bottom Strip
+	len=60; LightStripList[2] = new LightStrip(len,off,0,0); off+=len; //Left Front
+	len=50; LightStripList[3] = new LightStrip(len,off,0,0); off+=len; //Right Front
+	len=50; LightStripList[4] = new LightStrip(len,off,0,0); off+=len; //Right Arm
+	len=25; LightStripList[5] = new LightStrip(len,off,0,0, false, true); off+=len; //Right Wrist
+	len=50; LightStripList[6] = new LightStrip(len,off,0,0); off+=len; //Left Arm
+	len=25; LightStripList[7] = new LightStrip(len,off,0,0, false, true); off+=len; //Left Wrist
+
+	len = 0; off = 0;
+	len=51; LightStripList[8] = new LightStrip(len,off,0,2); off+=len; //Right Leg
+	len=25; LightStripList[9] = new LightStrip(len,off,0,2); off+=len; //Right Ankle
+	len=51; LightStripList[10] = new LightStrip(len,off,0,2); off+=len; //Left Leg
+	len=25; LightStripList[11] = new LightStrip(len,off,0,2); off+=len; //Left Ankle*/
 	
 
-	LightStripList[1] = new LightStrip(60,0,0,1); //Bottom Strip
-	LightStripList[2] = new LightStrip(60,0,0,1); //Left Front
-	LightStripList[3] = new LightStrip(60,0,0,1); //Right Front
-	LightStripList[4] = new LightStrip(40,200,0,1); //Right Arm
-	LightStripList[5] = new LightStrip(40,200,0,1, false, true); //Right Wrist
-	LightStripList[6] = new LightStrip(40,200,0,1); //Left Arm
-	LightStripList[7] = new LightStrip(40,260,0,1, false, true); //Left Wrist
+	LightStripList[0] = new LightStrip(360,0,0,1);
+	LightStripList[1] = new LightMatrix(0);
+	LightStripList[2] = new LightStrip(360,0,0,2);
 
-	LightStripList[8] = new LightStrip(51,0,0,2); //Right Leg
-	LightStripList[9] = new LightStrip(20,0,0,2); //Right Ankle
-	LightStripList[10] = new LightStrip(51,51+25,0,2); //Left Leg
-	LightStripList[11] = new LightStrip(20,0,0,2); //Left Ankle
-	
+	//std::cout << LightStripList[0]->Channel << " " << LightStripList[1]->Channel << " " << LightStripList[2]->Channel << "\n";
 
-	NextStyle = Style::Streak;
+	NextStyle = Style::Fade;
 	MajorWeight = 1;
 }
 DanceController::~DanceController()
@@ -325,6 +333,6 @@ RGB DanceController::ColourPicker()
 	choice.Scale = 1.0;
 	
 	last = choice;
-	
+	//std::cout << "Colour:" << choice.Colour << "\n";
 	return RGBScale(RGBVal(choice), 0.1);
 }
