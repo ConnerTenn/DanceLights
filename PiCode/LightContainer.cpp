@@ -9,16 +9,17 @@ LightContainer::LightContainer() :
 	Channel = 0;
 }
 
-LightContainer::LightContainer(int length, int stripOffset, int channel) :
-		Length(length), Lights(Length), Delay(Length)
+LightContainer::LightContainer(int length, int stripOffset, int timeOffset, int channel, bool inverse, bool constant) :
+		Length(length), Inverse(inverse), Constant(constant), Lights(Length), Delay(Length)
 {
 	StripOffset = stripOffset;
+	TimeOffset = timeOffset;
 	Channel = channel;
 	for (int i = 0; i < Length; i++)
 	{
 		Lights[i] = {0,0,0};
 		//Delay[i] = (i64)(((1.0-cos(TAU*(i-Length/2)/30.0)+1)/2.0)*100.0);
-		Delay[i] = i*50;
+		Delay[i] = i*50 + TimeOffset;
 	}
 }
 LightContainer::LightContainer(const LightContainer &other) :

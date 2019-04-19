@@ -11,14 +11,16 @@ class LightContainer
 {
 public:
 	int Length;
-	int StripOffset;
+	int StripOffset, TimeOffset;
 	int Channel;
+	bool Inverse;
+	bool Constant;
 	
 	DynamicArray<RGB> Lights;
 	DynamicArray<i64> Delay;
 	
 	LightContainer();
-	LightContainer(int length, int stripOffset, int channel);
+	LightContainer(int length, int stripOffset, int timeOffset, int channel, bool inverse = false, bool constant = false);
 	LightContainer(const LightContainer &other);
 	virtual ~LightContainer();
 	

@@ -12,7 +12,7 @@ class LightStrip : public LightContainer
 public:
 	
 	LightStrip();
-	LightStrip(int length, int stripOffset, int channel);
+	LightStrip(int length, int stripOffset, int timeOffset, int channel, bool inverse = false, bool constant = false);
 	LightStrip(const LightStrip &other);
 	//void operator=(const LightStrip &other);
 	~LightStrip();

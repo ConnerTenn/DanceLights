@@ -26,7 +26,7 @@ main.o: main.cpp LightStrip.h DanceController.h Globals.h Globals.h
 LEDController.o: LEDController.cpp LEDController.h LightStrip.h Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
-DanceController.o: DanceController.cpp DanceController.h Globals.h
+DanceController.o: DanceController.cpp DanceController.h LightMatrix.h LightStrip.h Globals.h
 	$(GPP) $(CFLAGS) $< -c -o $@
 
 LightStrip.o: LightStrip.cpp LightStrip.h LightContainer.h DanceController.h Globals.h
